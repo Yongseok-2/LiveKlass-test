@@ -26,12 +26,11 @@ public class Enrollment extends BaseEntity {
 
     private Long paidAmount;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private EnrollmentStatus status = EnrollmentStatus.PENDING;
 
-    @Column(nullable = false)
     private LocalDateTime paymentAt;
 
-    @Column(nullable = false)
     private LocalDateTime refundDeadline;
 }

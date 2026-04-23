@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Video {
+public class Vod extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +22,11 @@ public class Video {
     private String title;
 
     private String description;
+
+    @Column(nullable = false)
+    private long viewCount = 0;
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }

@@ -1,10 +1,11 @@
 package com.example.liveklass.domain;
 
-import com.sun.jdi.ClassType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,7 +19,7 @@ public class Lecture extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member creator;
 
     @Column(nullable = false)
@@ -27,25 +28,32 @@ public class Lecture extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
     private Integer maxCapacity;
 
-    private Integer currentUserCount = 0;
+    // TODO: maxCapacity 보다 높으면 안됨
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer currentEnrollmentCount = 0;
 
     @Column(nullable = false)
     private Long basePrice;
 
     private LocalDateTime salesStartAt;
     private LocalDateTime salesEndAt;
-    private LocalDateTime classStartAt;
-    private LocalDateTime classEndAt;
+    private LocalDateTime lectureStartAt;
+    private LocalDateTime lectureEndAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LectureType classType;
+    private LectureType lectureType;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LectureStatus classStatus = LectureStatus.DRAFT;
+    private LectureStatus lectureStatus = LectureStatus.DRAFT;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vod> vods = new ArrayList<>();
 
 }
