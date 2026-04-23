@@ -1,4 +1,4 @@
-package com.example.liveklass.dto.lecture;
+package com.example.liveklass.dto.creator;
 
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;

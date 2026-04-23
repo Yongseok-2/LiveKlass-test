@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 public record PaymentHistoryResponse(
 
-        @Schema(description = "결제 고유 번호")
-        Long paymentId,
+        @Schema(description = "신청(결제) 고유 번호")
+        Long enrollmentId,
 
         @Schema(description = "결제된 강의 제목")
         String lectureTitle,

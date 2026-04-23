@@ -1,11 +1,11 @@
-package com.example.liveklass.dto.member;
+package com.example.liveklass.dto.auth;
 
 import com.example.liveklass.domain.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record MemberSignUpRequest(
+public record SignUpRequest(
 
         @NotBlank(message = "아이디는 필수입니다.")
         @Schema(description = "아이디", example = "user1")

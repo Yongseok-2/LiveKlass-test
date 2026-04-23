@@ -1,8 +1,9 @@
-package com.example.liveklass.dto.lecture;
+package com.example.liveklass.dto.creator;
 
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;
 import com.example.liveklass.domain.LectureType;
+import com.example.liveklass.dto.lecture.VodListDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;

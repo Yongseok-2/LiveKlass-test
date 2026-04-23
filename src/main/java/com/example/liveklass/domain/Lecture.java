@@ -4,6 +4,9 @@ import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE lecture SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Lecture extends BaseEntity {
 
     @Id
@@ -50,14 +55,17 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false)
     private LectureType lectureType;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LectureStatus lectureStatus = LectureStatus.DRAFT;
+    private LectureStatus lectureStatus;
 
     @Builder.Default
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vod> vods = new ArrayList<>();
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     public void updateDates(LocalDateTime salesStartAt, LocalDateTime salesEndAt, LocalDateTime lectureStartAt, LocalDateTime lectureEndAt) {
 
