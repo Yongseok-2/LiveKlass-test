@@ -1,5 +1,6 @@
 package com.example.liveklass.controller;
 
+import com.example.liveklass.document.AuthApiDocument;
 import com.example.liveklass.dto.ApiResponse;
 import com.example.liveklass.dto.auth.LoginRequest;
 import com.example.liveklass.dto.auth.SignUpRequest;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    @AuthApiDocument.SignUpErrorResponse
     @Operation(summary = "회원가입", description = "회원가입을 통해 회원을 등록합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -30,6 +32,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok());
     }
 
+    @AuthApiDocument.LoginErrorResponse
     @Operation(summary = "로그인", description = "아이디와 비밀번호를 통해 로그인합니다.(현재는 세션에 저장)")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Void>> login(@Valid @RequestBody LoginRequest request, HttpSession session) {

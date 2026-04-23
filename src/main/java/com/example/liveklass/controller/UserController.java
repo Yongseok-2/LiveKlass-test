@@ -1,5 +1,6 @@
 package com.example.liveklass.controller;
 
+import com.example.liveklass.document.UserApiDocument;
 import com.example.liveklass.dto.ApiResponse;
 import com.example.liveklass.dto.enrollment.MyEnrollmentRequest;
 import com.example.liveklass.dto.enrollment.MyEnrollmentResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
+    @UserApiDocument.GetEnRollmentListErrorResponse
     @Operation(summary = "신청한 강의 목록", description = "신청한 강의 목록을 페이징하여 반환합니다.")
     @GetMapping("/lectures")
     public ResponseEntity<ApiResponse<MyEnrollmentResponse>> getEnrollmentList(@Valid @ModelAttribute MyEnrollmentRequest request) {

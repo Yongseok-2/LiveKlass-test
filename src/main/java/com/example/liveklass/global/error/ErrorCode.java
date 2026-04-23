@@ -24,7 +24,18 @@ public enum ErrorCode {
     // Enrollment (수강 신청/결제)
     ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "E001", "이미 취소된 수강 신청입니다."),
     REFUND_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, "E002", "환불 가능 기간이 지났습니다."),
-    NOT_PENDING(HttpStatus.BAD_REQUEST, "E003", "결제 대기 상태에서만 결제가 가능합니다.");
+    NOT_PENDING(HttpStatus.BAD_REQUEST, "E003", "결제 대기 상태에서만 결제가 가능합니다."),
+    ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "E004", "해당 신청내역을 찾을 수 없습니다."),
+    SALE_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, "E005", "해당 강의는 판매가 종료되었습니다."),
+
+    // Auth (인증)
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "A001", "아이디 또는 비밀번호가 일치하지 않습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A002", "로그인이 필요한 서비스입니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "A003", "해당 메뉴에 대한 접근 권한이 없습니다."),
+
+    // Member (회원)
+    DUPLICATE_ID(HttpStatus.CONFLICT, "M001", "이미 존재하는 아이디입니다.");
+
 
     private final HttpStatus status;
     private final String code;

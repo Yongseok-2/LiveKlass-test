@@ -1,5 +1,6 @@
 package com.example.liveklass.controller;
 
+import com.example.liveklass.document.LectureApiDocument;
 import com.example.liveklass.dto.ApiResponse;
 import com.example.liveklass.dto.lecture.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,7 @@ public class LectureController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
+    @LectureApiDocument.DetailErrorResponse
     @Operation(summary = "강의 상세 조회", description = "강의 ID를 이용해 상세 정보 및 VOD 목록을 조회합니다.")
     @GetMapping("/{lectureId}")
     public ResponseEntity<ApiResponse<LectureDetailResponse>> getLectureDetail(@PathVariable Long lectureId) {
