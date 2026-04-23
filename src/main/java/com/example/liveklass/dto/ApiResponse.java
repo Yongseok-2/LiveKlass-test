@@ -17,4 +17,9 @@ public record ApiResponse<T>(
     public static <T> ApiResponse<T> ok() {
         return new ApiResponse<>(true, "요청이 성공적으로 처리되었습니다.", null);
     }
+
+    // 실패 응답 (데이터가 없는 경우)
+    public static <T> ApiResponse<T> fail(String message) {
+        return new ApiResponse<>(false, message, null);
+    }
 }
