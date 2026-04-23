@@ -19,7 +19,7 @@ public enum ErrorCode {
     ENROLLMENT_PERIOD_ENDED(HttpStatus.BAD_REQUEST, "L003", "수강 신청 기간이 아닙니다."),
     CAPACITY_EXCEEDED(HttpStatus.BAD_REQUEST, "L004", "수강 정원이 마감되었습니다."),
     INCORRECT_SALE_START_DATE(HttpStatus.BAD_REQUEST, "L005", "판매 시작일은 판매 종료일 이전이어야 합니다."),
-    INCORRECT_LECTURE_START_DATE(HttpStatus.BAD_REQUEST, "L005", "강의 시작일은 강의 종료일 이전이어야 합니다."),
+    INCORRECT_LECTURE_START_DATE(HttpStatus.BAD_REQUEST, "L006", "강의 시작일은 강의 종료일 이전이어야 합니다."),
 
     // Enrollment (수강 신청/결제)
     ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "E001", "이미 취소된 수강 신청입니다."),
