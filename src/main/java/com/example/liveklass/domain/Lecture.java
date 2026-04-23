@@ -1,5 +1,7 @@
 package com.example.liveklass.domain;
 
+import com.example.liveklass.global.error.CustomException;
+import com.example.liveklass.global.error.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -87,11 +89,13 @@ public class Lecture extends BaseEntity {
     public void openLecture() {
 
         if(this.salesStartAt != null && this.salesEndAt != null && this.salesStartAt.isAfter(this.salesEndAt)) {
-                // TODO: 판매 시작일은 판매 종료일 이전이어야 합니다.
+                // 판매 시작일은 판매 종료일 이전이어야 합니다.
+                throw new CustomException(ErrorCode.INCORRECT_SALE_START_DATE);
         }
 
         if(this.lectureStartAt != null && this.lectureEndAt != null && this.lectureStartAt.isAfter(this.lectureEndAt)) {
-                // TODO: 강의 시작일은 강의 종료일 이전이어야 합니다.
+                // 강의 시작일은 강의 종료일 이전이어야 합니다.
+                throw new CustomException(ErrorCode.INCORRECT_LECTURE_START_DATE);
         }
 
         this.lectureStatus = LectureStatus.OPEN;
@@ -99,7 +103,8 @@ public class Lecture extends BaseEntity {
 
     public void closeLecture() {
         if (this.lectureStatus == LectureStatus.CLOSED) {
-            //TODO: 이미 종료된 강의입니다.
+            // 이미 종료된 강의입니다.
+            throw new CustomException(ErrorCode.LECTURE_ALREADY_CLOSED);
         }
         this.lectureStatus = LectureStatus.CLOSED;
     }
@@ -107,15 +112,18 @@ public class Lecture extends BaseEntity {
     public void increaseCurrentEnrollmentCount(LocalDateTime requestTime) {
 
         if (this.salesStartAt != null && requestTime.isBefore(this.salesStartAt)) {
-            // TODO: 아직 수강 신청 기간이 시작되지 않았습니다.
+            // 수강 신청 기간이 아닙니다.
+            throw new CustomException(ErrorCode.ENROLLMENT_PERIOD_ENDED);
         }
 
         if (this.salesEndAt != null && requestTime.isAfter(this.salesEndAt)) {
-            // TODO: 수강 신청 기간이 종료되었습니다.
+            // 수강 신청 기간이 아닙니다.
+            throw new CustomException(ErrorCode.ENROLLMENT_PERIOD_ENDED);
         }
 
         if (this.maxCapacity != null && this.maxCapacity > 0 && this.currentEnrollmentCount >= this.maxCapacity) {
-            // TODO: 수강 정원이 마감되었습니다.
+            // 수강 정원이 마감되었습니다.
+            throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
         }
 
         this.currentEnrollmentCount++;

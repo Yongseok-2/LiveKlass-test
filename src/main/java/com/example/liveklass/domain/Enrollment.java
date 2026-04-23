@@ -1,5 +1,7 @@
 package com.example.liveklass.domain;
 
+import com.example.liveklass.global.error.CustomException;
+import com.example.liveklass.global.error.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,7 +48,8 @@ public class Enrollment extends BaseEntity {
     public void confirmEnrollment(LocalDateTime paymentTime, Long paidAmount) {
 
         if(this.status != EnrollmentStatus.PENDING) {
-            // TODO: 결제 대기 상태에서만 확정가능합니다.
+            // 결제 대기 상태에서만 결제가 가능합니다.
+            throw new CustomException(ErrorCode.NOT_PENDING);
         }
 
         this.status = EnrollmentStatus.CONFIRMED;
@@ -59,11 +62,13 @@ public class Enrollment extends BaseEntity {
     public void cancel(LocalDateTime requestTime) {
 
         if(this.status == EnrollmentStatus.CANCELLED) {
-            // TODO: 이미 취소된 수강입니다.
+            //이미 취소된 수강 신청입니다.
+            throw new CustomException(ErrorCode.ALREADY_CANCELED);
         }
 
         if(this.status == EnrollmentStatus.CONFIRMED && !canRefund(requestTime)) {
-            // TODO: 환불 가능기간이 지났습니다.
+            // 환불 가능 기간이 지났습니다.
+            throw new CustomException(ErrorCode.REFUND_PERIOD_EXPIRED);
         }
 
         this.status = EnrollmentStatus.CANCELLED;
