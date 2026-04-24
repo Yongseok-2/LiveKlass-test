@@ -52,6 +52,10 @@ public class Enrollment extends BaseEntity {
             throw new CustomException(ErrorCode.NOT_PENDING);
         }
 
+        if (this.lecture.getLectureStatus() != LectureStatus.OPEN) {
+            throw new CustomException(ErrorCode.SALE_PERIOD_EXPIRED);
+        }
+
         this.status = EnrollmentStatus.CONFIRMED;
         this.paidAmount = paidAmount;
         this.paymentAt = paymentTime;

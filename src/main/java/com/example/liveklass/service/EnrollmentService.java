@@ -1,11 +1,13 @@
 package com.example.liveklass.service;
 
 import com.example.liveklass.domain.*;
+import com.example.liveklass.dto.enrollment.PaymentRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.EnrollmentRepository;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,24 @@ public class EnrollmentService {
                 .build();
 
         enrollmentRepository.save(enrollment);
+    }
+
+    @Transactional
+    public void confirmEnrollment(@Valid PaymentRequest request, Long enrollmentId, String userName) {
+
+        Member user = memberValid(userName);
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
+
+        if(!enrollment.getMember().getUserName().equals(user.getUserName())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        if (!enrollment.getLecture().getBasePrice().equals(request.paidAmount())) {
+            throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+        }
+
+        enrollment.confirmEnrollment(LocalDateTime.now(), request.paidAmount());
     }
 
     public Member memberValid(String userName) {

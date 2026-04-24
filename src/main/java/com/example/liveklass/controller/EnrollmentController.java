@@ -33,10 +33,12 @@ public class EnrollmentController {
     @EnrollmentApiDocument.ConfirmErrorResponse
     @Operation(summary = "신청한 강의 결제", description = "신청ID를 받아 신청한 강의를 최종 결제하여 상태를 변경합니다. (PENDING -> CONFIRMED)")
     @PatchMapping("/{enrollmentId}/confirm")
-    public ResponseEntity<ApiResponse<Void>> confirmEnrollment(@Valid @RequestBody PaymentRequest request,
-            @PathVariable Long enrollmentId) {
+    public ResponseEntity<ApiResponse<Void>> confirmEnrollment(
+            @Valid @RequestBody PaymentRequest request,
+            @PathVariable Long enrollmentId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: userService.confirmEnrollment(request, enrollmentId);
+        enrollmentService.confirmEnrollment(request, enrollmentId, userName);
         return ResponseEntity.ok(ApiResponse.ok());
     }
 
