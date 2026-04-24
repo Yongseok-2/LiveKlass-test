@@ -43,6 +43,18 @@ public class CreatorController {
     }
 
     @CreatorApiDocument.UpdateLectureErrorResponse
+    @Operation(summary = "강의 오픈", description = "기존 강의에 임시로 등록 되어있던 강의를 오픈합니다.")
+    @PatchMapping("/{lectureId}/open")
+    public ResponseEntity<ApiResponse<Long>> openLecture(
+            @PathVariable Long lectureId,
+            @SessionAttribute(name = "userName") String userName) {
+
+        Long openId = creatorService.openLecture(lectureId, userName);
+
+        return ResponseEntity.ok(ApiResponse.ok(openId));
+    }
+
+    @CreatorApiDocument.UpdateLectureErrorResponse
     @Operation(summary = "강의 수정", description = "기존 강의를 수정하고 생성된 강의의 ID를 반환합니다.")
     @PutMapping("/{lectureId}")
     public ResponseEntity<ApiResponse<Long>> updateLecture(
@@ -104,4 +116,5 @@ public class CreatorController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
 }

@@ -45,6 +45,15 @@ public class CreatorService {
     }
 
     @Transactional
+    public Long openLecture(Long lectureId, String userName) {
+        Lecture lecture = memberAndLectureValid(lectureId, userName);
+
+        lecture.openLecture();
+
+        return lecture.getId();
+    }
+
+    @Transactional
     public Long updateLecture(LectureUpdateRequest request, Long lectureId, String userName) {
 
         Lecture lecture = memberAndLectureValid(lectureId, userName);
@@ -83,6 +92,7 @@ public class CreatorService {
         lectureRepository.delete(lecture);
     }
 
+    @Transactional
     public Page<MyLectureListDto> getMyLectureList(@Valid MyLectureSearchRequest request, String userName, LectureStatus lectureStatus) {
 
         Member creator = memberRepository.findByUserName(userName)
@@ -99,6 +109,7 @@ public class CreatorService {
         return lecturePage.map(MyLectureListDto::from);
     }
 
+    @Transactional
     public MyLectureDetailResponse getMyLecture(Long lectureId, String userName, Pageable pageable) {
 
         Lecture lecture = memberAndLectureValid(lectureId, userName);
@@ -110,6 +121,7 @@ public class CreatorService {
         return MyLectureDetailResponse.from(lecture, enrollmentDtoPage);
     }
 
+    @Transactional
     public Lecture memberAndLectureValid(Long lectureId, String userName) {
         Member creator = memberRepository.findByUserName(userName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -127,4 +139,5 @@ public class CreatorService {
 
         return lecture;
     }
+
 }
