@@ -45,26 +45,6 @@ public interface CreatorApiDocument {
                   "message": "해당 메뉴에 대한 접근 권한이 없습니다.",
                   "data": null
                 }
-                """))),
-            @ApiResponse(responseCode = "L005", description = "날짜 설정 검증 실패",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "판매 시작일은 판매 종료일 이전이어야 합니다.",
-                  "data": null
-                }
-                """))),
-            @ApiResponse(responseCode = "L006", description = "날짜 설정 검증 실패",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "강의 시작일은 강의 종료일 이전이어야 합니다.",
-                  "data": null
-                }
                 """)))
     })
     @interface CreateLectureErrorResponse {
@@ -100,6 +80,16 @@ public interface CreatorApiDocument {
                 {
                   "success": false,
                   "message": "해당 메뉴에 대한 접근 권한이 없습니다.",
+                  "data": null
+                }
+                """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
                   "data": null
                 }
                 """))),
@@ -170,6 +160,16 @@ public interface CreatorApiDocument {
                   "data": null
                 }
                 """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
+                  "data": null
+                }
+                """))),
             @ApiResponse(responseCode = "L001", description = "해당하는 데이터 없음",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "NOT_FOUND",
@@ -227,6 +227,16 @@ public interface CreatorApiDocument {
                   "data": null
                 }
                 """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
+                  "data": null
+                }
+                """))),
             @ApiResponse(responseCode = "L001", description = "해당하는 데이터 없음",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "NOT_FOUND",
@@ -273,7 +283,17 @@ public interface CreatorApiDocument {
                   "message": "해당 메뉴에 대한 접근 권한이 없습니다.",
                   "data": null
                 }
-                """)))
+                """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
+                  "data": null
+                }
+                """))),
     })
     @interface GetLectureListErrorResponse {
     }
@@ -308,6 +328,16 @@ public interface CreatorApiDocument {
                 {
                   "success": false,
                   "message": "해당 메뉴에 대한 접근 권한이 없습니다.",
+                  "data": null
+                }
+                """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
                   "data": null
                 }
                 """))),
@@ -355,6 +385,16 @@ public interface CreatorApiDocument {
                 {
                   "success": false,
                   "message": "해당 메뉴에 대한 접근 권한이 없습니다.",
+                  "data": null
+                }
+                """))),
+            @ApiResponse(responseCode = "M002", description = "사용자를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
                   "data": null
                 }
                 """))),

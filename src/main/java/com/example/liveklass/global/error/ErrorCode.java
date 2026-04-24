@@ -34,7 +34,8 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "A003", "해당 메뉴에 대한 접근 권한이 없습니다."),
 
     // Member (회원)
-    DUPLICATE_ID(HttpStatus.CONFLICT, "M001", "이미 존재하는 아이디입니다.");
+    DUPLICATE_ID(HttpStatus.CONFLICT, "M001", "이미 존재하는 아이디입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M002", "존재하지 않은 사용자입니다.");
 
 
     private final HttpStatus status;

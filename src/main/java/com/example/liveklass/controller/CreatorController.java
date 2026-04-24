@@ -9,6 +9,7 @@ import com.example.liveklass.dto.creator.MyLectureSearchRequest;
 import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.dto.lecture.VodCreateRequest;
+import com.example.liveklass.service.CreatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,15 +24,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/creator/lectures")
 public class CreatorController {
 
+    private final CreatorService creatorService;
+
     @CreatorApiDocument.CreateLectureErrorResponse
     @Operation(summary = "강의 등록", description = "새로운 강의를 생성하고 생성된 강의의 ID를 반환합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createLecture(@Valid @RequestBody LectureCreateRequest request) {
+    public ResponseEntity<ApiResponse<Long>> createLecture(
+            @Valid @RequestBody LectureCreateRequest request,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: lectureService.createLecture(request);
+        Long lectureId = creatorService.createLecture(request, userName);
 
-        Long dummyId = 1L;
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(dummyId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(lectureId));
     }
 
     @CreatorApiDocument.UpdateLectureErrorResponse
