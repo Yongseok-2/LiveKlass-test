@@ -122,6 +122,26 @@ public interface CreatorApiDocument {
                   "message": "강의 시작일은 강의 종료일 이전이어야 합니다.",
                   "data": null
                 }
+                """))),
+            @ApiResponse(responseCode = "L008", description = "강의 생성자 검증 실패",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "BAD_REQUEST",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "강의 생성자만 수정 가능합니다.",
+                  "data": null
+                }
+                """))),
+            @ApiResponse(responseCode = "L009", description = "날짜 설정 검증 실패",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "BAD_REQUEST",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "판매 시작일은 강의 시작 이전이어야 합니다.",
+                  "data": null
+                }
                 """)))
     })
     @interface UpdateLectureErrorResponse {

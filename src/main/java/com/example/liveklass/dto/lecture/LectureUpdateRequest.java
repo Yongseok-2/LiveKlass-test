@@ -1,6 +1,7 @@
 package com.example.liveklass.dto.lecture;
 
 import com.example.liveklass.domain.LectureStatus;
+import com.example.liveklass.domain.LectureType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,8 +27,9 @@ public record LectureUpdateRequest(
         @Schema(description = "강의 가격 / 무료면 0", example = "30000")
         Long basePrice,
 
-        @NotNull(message = "강의 오픈 여부는 필수입니다.(DRAFT = 초안, OPEN = 즉시 공개)")
-        LectureStatus lectureStatus,
+        @NotNull(message = "강의 유형은 필수입니다.")
+        @Schema(description = "강의의 유형(VOD, LIVE)", example = "VOD")
+        LectureType lectureType,
 
         @Schema(description = "판매 시작 날짜", example = "2026-05-01T09:00:00")
         LocalDateTime salesStartAt,

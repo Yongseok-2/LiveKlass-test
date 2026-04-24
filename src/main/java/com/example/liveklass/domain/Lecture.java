@@ -3,6 +3,7 @@ package com.example.liveklass.domain;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -34,6 +35,7 @@ public class Lecture extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull(message = "수강 정원을 입력해주세요.")
     private Integer maxCapacity;
 
     @Builder.Default
@@ -45,10 +47,7 @@ public class Lecture extends BaseEntity {
 
     private LocalDateTime salesStartAt;
     private LocalDateTime salesEndAt;
-
-    @Column(nullable = false)
     private LocalDateTime lectureStartAt;
-
     private LocalDateTime lectureEndAt;
 
     @Enumerated(EnumType.STRING)
@@ -67,6 +66,18 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    public void updateBasicInfo(String title, String description, Integer maxCapacity, Long basePrice, LectureType lectureType) {
+
+        if(maxCapacity < this.currentEnrollmentCount) {
+            throw new CustomException(ErrorCode.INVALID_CAPACITY_SETTING);
+        }
+        this.title = title;
+        this.description = description;
+        this.maxCapacity = maxCapacity;
+        this.basePrice = basePrice;
+        this.lectureType = lectureType;
+    }
+
     public void updateDates(LocalDateTime salesStartAt, LocalDateTime salesEndAt, LocalDateTime lectureStartAt, LocalDateTime lectureEndAt) {
 
         if(lectureStartAt == null) {
@@ -75,13 +86,8 @@ public class Lecture extends BaseEntity {
             this.lectureStartAt = lectureStartAt;
         }
 
-        if (salesStartAt == null || salesStartAt.isAfter(this.lectureStartAt)) {
-            this.salesStartAt = this.lectureStartAt;
-        }else {
-            this.salesStartAt = salesStartAt;
-        }
-
         this.lectureEndAt = lectureEndAt;
+        this.salesStartAt = salesStartAt;
 
         if (this.lectureEndAt != null) {
             if(salesEndAt == null || salesEndAt.isAfter(this.lectureEndAt)) {
@@ -92,20 +98,31 @@ public class Lecture extends BaseEntity {
         } else {
             this.salesEndAt = salesEndAt;
         }
+
+        validateDate();
+    }
+
+    public void validateDate() {
+
+        if (this.salesStartAt != null && this.salesStartAt.isAfter(this.lectureStartAt)) {
+            // 판매 시작일은 강의 시작 이전이어야 합니다.
+            throw new CustomException(ErrorCode.SALE_START_DATE_AFTER_LECTURE);
+        }
+
+        if(this.salesStartAt != null && this.salesEndAt != null && this.salesStartAt.isAfter(this.salesEndAt)) {
+            // 판매 시작일은 판매 종료일 이전이어야 합니다.
+            throw new CustomException(ErrorCode.INCORRECT_SALE_START_DATE);
+        }
+
+        if(this.salesStartAt != null && this.lectureEndAt != null && this.lectureStartAt.isAfter(this.lectureEndAt)) {
+            // 강의 시작일은 강의 종료일 이전이어야 합니다.
+            throw new CustomException(ErrorCode.INCORRECT_LECTURE_START_DATE);
+        }
     }
 
     public void openLecture() {
 
-        if(this.salesStartAt != null && this.salesEndAt != null && this.salesStartAt.isAfter(this.salesEndAt)) {
-                // 판매 시작일은 판매 종료일 이전이어야 합니다.
-                throw new CustomException(ErrorCode.INCORRECT_SALE_START_DATE);
-        }
-
-        if(this.lectureStartAt != null && this.lectureEndAt != null && this.lectureStartAt.isAfter(this.lectureEndAt)) {
-                // 강의 시작일은 강의 종료일 이전이어야 합니다.
-                throw new CustomException(ErrorCode.INCORRECT_LECTURE_START_DATE);
-        }
-
+        validateDate();
         this.lectureStatus = LectureStatus.OPEN;
     }
 
