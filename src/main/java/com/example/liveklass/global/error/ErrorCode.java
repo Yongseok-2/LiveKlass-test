@@ -29,7 +29,9 @@ public enum ErrorCode {
     REFUND_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, "E002", "환불 가능 기간이 지났습니다."),
     NOT_PENDING(HttpStatus.BAD_REQUEST, "E003", "결제 대기 상태에서만 결제가 가능합니다."),
     ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "E004", "해당 신청내역을 찾을 수 없습니다."),
-    SALE_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, "E005", "해당 강의는 판매가 종료되었습니다."),
+    SALE_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, "E005", "해당 강의 구매기간이 아닙니다."),
+    ALREADY_ENROLLED(HttpStatus.BAD_REQUEST, "E006", "이미 수강신청한 강의입니다."),
+    CANNOT_ENROLL_OWN_LECTURE(HttpStatus.BAD_REQUEST, "E007", "본인의 강의는 신청할 수 없습니다 ."),
 
     // Auth (인증)
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "A001", "아이디 또는 비밀번호가 일치하지 않습니다."),
