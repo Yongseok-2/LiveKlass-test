@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class UpdateLecture {
+public class UpdateLectureTest {
 
     @Mock
     private MemberRepository memberRepository;

@@ -59,10 +59,6 @@ public class Lecture extends BaseEntity {
     private LectureStatus lectureStatus;
 
     @Builder.Default
-    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Vod> vods = new ArrayList<>();
-
-    @Builder.Default
     @Column(nullable = false)
     private boolean isDeleted = false;
 

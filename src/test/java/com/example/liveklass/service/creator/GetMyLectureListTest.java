@@ -1,10 +1,11 @@
-package com.example.liveklass.service;
+package com.example.liveklass.service.creator;
 
 import com.example.liveklass.domain.*;
 import com.example.liveklass.dto.creator.MyLectureListDto;
 import com.example.liveklass.dto.creator.MyLectureSearchRequest;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
+import com.example.liveklass.service.CreatorService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -81,6 +81,6 @@ public class GetMyLectureListTest {
         assertThat(result.getContent().get(0).title()).isEqualTo("기존 제목");
         assertThat(result.getTotalElements()).isEqualTo(1);
 
-        verify(lectureRepository).findAllByCreator_UserNameAndLectureStatus(userName, isNull(), any(Pageable.class));
+        verify(lectureRepository).findAllByCreator_UserNameAndLectureStatus(eq(userName), eq(null), any(Pageable.class));
     }
 }

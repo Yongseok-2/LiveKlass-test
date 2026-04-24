@@ -1,4 +1,4 @@
-package com.example.liveklass.service;
+package com.example.liveklass.service.auth;
 
 import com.example.liveklass.domain.Member;
 import com.example.liveklass.domain.MemberRole;
@@ -7,6 +7,7 @@ import com.example.liveklass.dto.auth.SignUpRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.MemberRepository;
+import com.example.liveklass.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -10,9 +10,6 @@ import java.util.List;
 
 public record LectureDetailResponse(
 
-        @Schema(description = "강의에 있는 vod 목록")
-        List<VodListDto> vodList,
-
         @Schema(description = "강사 이름", example = "홍길동")
         String creatorName,
 
@@ -54,9 +51,6 @@ public record LectureDetailResponse(
 ) {
     public static LectureDetailResponse from(Lecture lecture) {
         return new LectureDetailResponse(
-                lecture.getVods().stream()
-                        .map(VodListDto::from)
-                        .toList(),
                 lecture.getCreator().getName(),
                 lecture.getTitle(),
                 lecture.getDescription(),

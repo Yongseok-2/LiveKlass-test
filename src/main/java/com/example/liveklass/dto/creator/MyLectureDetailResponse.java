@@ -4,7 +4,6 @@ import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;
 import com.example.liveklass.domain.LectureType;
 import com.example.liveklass.dto.global.PagedResponse;
-import com.example.liveklass.dto.lecture.VodListDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Page;
 
@@ -12,9 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MyLectureDetailResponse(
-
-        @Schema(description = "강의에 있는 vod 목록")
-        List<VodListDto> vodList,
 
         @Schema(description = "강의 제목", example = "Spring Boot 입문")
         String title,
@@ -57,9 +53,6 @@ public record MyLectureDetailResponse(
 ) {
     public static MyLectureDetailResponse from(Lecture lecture, Page<CurrentEnrollmentListDto> enrollmentList) {
         return new MyLectureDetailResponse(
-                lecture.getVods().stream()
-                        .map(VodListDto::from)
-                        .toList(),
                 lecture.getTitle(),
                 lecture.getDescription(),
                 lecture.getLectureStatus(),
