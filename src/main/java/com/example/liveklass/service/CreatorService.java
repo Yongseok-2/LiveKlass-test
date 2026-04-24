@@ -1,15 +1,21 @@
 package com.example.liveklass.service;
 
 import com.example.liveklass.domain.Lecture;
+import com.example.liveklass.domain.LectureStatus;
 import com.example.liveklass.domain.Member;
 import com.example.liveklass.domain.MemberRole;
+import com.example.liveklass.dto.creator.MyLectureListDto;
+import com.example.liveklass.dto.creator.MyLectureSearchRequest;
 import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,5 +116,21 @@ public class CreatorService {
         }
 
         lectureRepository.delete(lecture);
+    }
+
+    public Page<MyLectureListDto> getMyLectureList(@Valid MyLectureSearchRequest request, String userName, LectureStatus lectureStatus) {
+
+        Member creator = memberRepository.findByUserName(userName)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if(creator.getRole() != (MemberRole.CREATOR)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        Pageable pageable = request.toPageable();
+
+        Page<Lecture> lecturePage = lectureRepository.findAllByCreator_UserNameAndLectureStatus(userName, lectureStatus, pageable);
+
+        return lecturePage.map(MyLectureListDto::from);
     }
 }

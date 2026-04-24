@@ -1,6 +1,7 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.CreatorApiDocument;
+import com.example.liveklass.domain.LectureStatus;
 import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.creator.MyLectureDetailResponse;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,10 +80,14 @@ public class CreatorController {
     @CreatorApiDocument.GetLectureListErrorResponse
     @Operation(summary = "내가 생성한 강의 목록", description = "내가 생성한 강의를 페이징하여 반환합니다.")
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse<PagedResponse<MyLectureListDto>>> getMyLectureList(@Valid @ModelAttribute MyLectureSearchRequest request) {
+    public ResponseEntity<ApiResponse<PagedResponse<MyLectureListDto>>> getMyLectureList(
+            @Valid @ModelAttribute MyLectureSearchRequest request,
+            @SessionAttribute(name = "userName") String userName,
+            LectureStatus lectureStatus) {
 
-        // TODO: Page<MyLectureListDto> page = creatorService.getMyLectureList(request);
-        return ResponseEntity.ok(ApiResponse.ok(null));
+        Page<MyLectureListDto> page = creatorService.getMyLectureList(request, userName, lectureStatus);
+
+        return ResponseEntity.ok(ApiResponse.ok(PagedResponse.from(page)));
     }
 
     @CreatorApiDocument.GetLectureDetailErrorResponse
