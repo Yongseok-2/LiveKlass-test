@@ -54,9 +54,11 @@ public class CreatorController {
     @CreatorApiDocument.CloseLectureErrorResponse
     @Operation(summary = "강의 종료", description = "강의 상태를 CLOSED로 변경합니다.")
     @PatchMapping("/{lectureId}/close")
-    public ResponseEntity<ApiResponse<Void>> closeLecture(@PathVariable Long lectureId) {
+    public ResponseEntity<ApiResponse<Void>> closeLecture(
+            @PathVariable Long lectureId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: lectureService.closeLecture(lectureId)
+        creatorService.closeLecture(lectureId, userName);
 
         return ResponseEntity.ok(ApiResponse.ok());
     }
@@ -64,9 +66,12 @@ public class CreatorController {
     @CreatorApiDocument.DeleteLectureErrorResponse
     @Operation(summary = "강의 삭제", description = "기존 강의를 삭제합니다.")
     @DeleteMapping("/{lectureId}")
-    public ResponseEntity<ApiResponse<Void>> deleteLecture(@PathVariable Long lectureId) {
+    public ResponseEntity<ApiResponse<Void>> deleteLecture(
+            @PathVariable Long lectureId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: lectureService.deleteLecture(lectureId);
+        creatorService.deleteLecture(lectureId, userName);
+
         return ResponseEntity.ok(ApiResponse.ok());
     }
 

@@ -71,4 +71,44 @@ public class CreatorService {
 
         return lecture.getId();
     }
+
+    @Transactional
+    public void closeLecture(Long lectureId, String userName) {
+
+        Member creator = memberRepository.findByUserName(userName)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if(creator.getRole() != (MemberRole.CREATOR)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
+
+        if (!lecture.getCreator().getUserName().equals(userName)) {
+            throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
+        }
+
+        lecture.closeLecture();
+    }
+
+    @Transactional
+    public void deleteLecture(Long lectureId, String userName) {
+
+        Member creator = memberRepository.findByUserName(userName)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if(creator.getRole() != (MemberRole.CREATOR)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
+
+        if (!lecture.getCreator().getUserName().equals(userName)) {
+            throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
+        }
+
+        lectureRepository.delete(lecture);
+    }
 }
