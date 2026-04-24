@@ -1,9 +1,11 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.AuthApiDocument;
+import com.example.liveklass.domain.Member;
 import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.auth.LoginRequest;
 import com.example.liveklass.dto.auth.SignUpRequest;
+import com.example.liveklass.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
@@ -22,12 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthService authService;
+
     @AuthApiDocument.SignUpErrorResponse
     @Operation(summary = "회원가입", description = "회원가입을 통해 회원을 등록합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
 
-        // TODO: authService.signUp(request);
+        authService.signUp(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok());
     }
@@ -37,9 +41,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Void>> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
 
-        // TODO:
-        // 1. 서비스에서 닉네임 가져오기
-        // 2. 세션에 정보 저장
+        Member member = authService.login(request);
+
+        session.setAttribute("userName", member.getUserName());
+        session.setAttribute("role", member.getRole());
 
         return ResponseEntity.ok(ApiResponse.ok());
     }
