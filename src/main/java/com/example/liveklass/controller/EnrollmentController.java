@@ -1,7 +1,7 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.EnrollmentApiDocument;
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.enrollment.PaymentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

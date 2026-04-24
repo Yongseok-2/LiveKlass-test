@@ -1,10 +1,11 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.CreatorApiDocument;
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.global.ApiResponse;
+import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.creator.MyLectureDetailResponse;
+import com.example.liveklass.dto.creator.MyLectureListDto;
 import com.example.liveklass.dto.creator.MyLectureSearchRequest;
-import com.example.liveklass.dto.creator.MyLectureSearchResponse;
 import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.dto.lecture.VodCreateRequest;
@@ -66,9 +67,9 @@ public class CreatorController {
     @CreatorApiDocument.GetLectureListErrorResponse
     @Operation(summary = "내가 생성한 강의 목록", description = "내가 생성한 강의를 페이징하여 반환합니다.")
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse<MyLectureSearchResponse>> getMyLectureList(@Valid @ModelAttribute MyLectureSearchRequest request) {
+    public ResponseEntity<ApiResponse<PagedResponse<MyLectureListDto>>> getMyLectureList(@Valid @ModelAttribute MyLectureSearchRequest request) {
 
-        // TODO: creatorService.getMyLectureList(request);
+        // TODO: Page<MyLectureListDto> page = creatorService.getMyLectureList(request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 

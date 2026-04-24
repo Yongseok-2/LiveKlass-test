@@ -3,8 +3,10 @@ package com.example.liveklass.dto.creator;
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;
 import com.example.liveklass.domain.LectureType;
+import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.lecture.VodListDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +31,9 @@ public record MyLectureDetailResponse(
         @Schema(description = "현재 수강 인원", example = "15")
         Integer currentEnrollmentCount,
 
+        @Schema(description = "현재 수강 인원 리스트 (페이징)")
+        PagedResponse<CurrentEnrollmentListDto> enrollmentList,
+
         @Schema(description = "최대 수강 정원, 0이면 제한 없음", example = "30")
         Integer maxCapacity,
 
@@ -50,7 +55,7 @@ public record MyLectureDetailResponse(
         @Schema(description = "강의 종료일", example = "2026-05-10T09:00:00")
         LocalDateTime lectureEndAt
 ) {
-    public static MyLectureDetailResponse from(Lecture lecture) {
+    public static MyLectureDetailResponse from(Lecture lecture, Page<CurrentEnrollmentListDto> enrollmentList) {
         return new MyLectureDetailResponse(
                 lecture.getVods().stream()
                         .map(VodListDto::from)
@@ -60,6 +65,7 @@ public record MyLectureDetailResponse(
                 lecture.getLectureStatus(),
                 lecture.getLectureType(),
                 lecture.getCurrentEnrollmentCount(),
+                PagedResponse.from(enrollmentList),
                 lecture.getMaxCapacity(),
                 lecture.getBasePrice(),
                 lecture.getCreatedAt(),

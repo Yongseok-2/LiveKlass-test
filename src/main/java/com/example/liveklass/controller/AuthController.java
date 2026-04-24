@@ -1,7 +1,7 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.AuthApiDocument;
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.auth.LoginRequest;
 import com.example.liveklass.dto.auth.SignUpRequest;
 import io.swagger.v3.oas.annotations.Operation;

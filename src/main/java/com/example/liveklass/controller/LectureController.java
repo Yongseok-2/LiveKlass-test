@@ -1,7 +1,8 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.LectureApiDocument;
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.global.ApiResponse;
+import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.lecture.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,9 +19,9 @@ public class LectureController {
 
     @Operation(summary = "강의 목록 조회", description = "등록된 강의의 목록을 페이징하여 반환합니다.")
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse<LectureSearchResponse>> getLectureList(@Valid @ModelAttribute LectureSearchRequest request) {
+    public ResponseEntity<ApiResponse<PagedResponse<LectureListDto>>> getLectureList(@Valid @ModelAttribute LectureSearchRequest request) {
 
-        // TODO: lectureService.getLectureList(request);
+        // TODO: Page<LectureListDto> page = lectureService.getLectureList(request);
 
         return ResponseEntity.ok(ApiResponse.ok(null));
     }

@@ -1,9 +1,10 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.UserApiDocument;
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.enrollment.MyEnrollmentListDto;
+import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.enrollment.MyEnrollmentRequest;
-import com.example.liveklass.dto.enrollment.MyEnrollmentResponse;
+import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.payment.PaymentHistoryRequest;
 import com.example.liveklass.dto.payment.PaymentHistoryResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,9 +23,9 @@ public class UserController {
     @UserApiDocument.GetEnRollmentListErrorResponse
     @Operation(summary = "신청한 강의 목록", description = "신청한 강의 목록을 페이징하여 반환합니다.")
     @GetMapping("/lectures")
-    public ResponseEntity<ApiResponse<MyEnrollmentResponse>> getEnrollmentList(@Valid @ModelAttribute MyEnrollmentRequest request) {
+    public ResponseEntity<ApiResponse<PagedResponse<MyEnrollmentListDto>>> getEnrollmentList(@Valid @ModelAttribute MyEnrollmentRequest request) {
 
-        // TODO: userService.getEnrollmentList(request);
+        // TODO: Page<MyEnrollmentListDto> page = userService.getEnrollmentList(request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 

@@ -1,6 +1,6 @@
 package com.example.liveklass.global.error;
 
-import com.example.liveklass.dto.ApiResponse;
+import com.example.liveklass.dto.global.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

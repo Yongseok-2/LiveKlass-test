@@ -1,4 +1,4 @@
-package com.example.liveklass.dto;
+package com.example.liveklass.dto.global;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
