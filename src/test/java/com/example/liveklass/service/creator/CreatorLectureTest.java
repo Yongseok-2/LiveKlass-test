@@ -5,6 +5,7 @@ import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
 import com.example.liveklass.service.CreatorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -33,34 +35,47 @@ public class CreatorLectureTest {
     @InjectMocks
     CreatorService creatorService;
 
-    @Test
-    @DisplayName("강의 등록 성공 - 초안 상태로 생성")
-    void createLecture_success() {
+    String userName = "teacher1";
+    Long lectureId = 1L;
+    Member creator;
+    LectureCreateRequest request;
+    Lecture lecture;
 
-        String userName = "teacher1";
-
-        Member creator = Member.builder()
+    @BeforeEach
+    void setUp() {
+        creator = Member.builder()
                 .userName(userName)
                 .role(MemberRole.CREATOR)
                 .build();
 
-        LectureCreateRequest request = new LectureCreateRequest(
-                1L,
+        lecture = Lecture.builder()
+                .id(lectureId)
+                .creator(creator)
+                .title("기존 제목")
+                .currentEnrollmentCount(10)
+                .basePrice(50000L)
+                .lectureStatus(LectureStatus.DRAFT)
+                .build();
+
+        request = new LectureCreateRequest(
+                lectureId,
                 "Spring Boot 입문",
                 "설명입니다",
                 30,
                 30000L,
                 LectureType.VOD
         );
+    }
 
-        Lecture lecture = Lecture.builder().id(100L).build();
-
+    @Test
+    @DisplayName("강의 등록 성공 - 초안 상태로 생성")
+    void createLecture_success() {
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
         given(lectureRepository.save(any(Lecture.class))).willReturn(lecture);
 
         Long savedId = creatorService.createLecture(request, userName);
 
-        assertThat(savedId).isEqualTo(100L);
+        assertThat(savedId).isEqualTo(lectureId);
 
         verify(lectureRepository).save(argThat(l ->
                 l.getLectureStatus() == LectureStatus.DRAFT && l.getCreator() == creator

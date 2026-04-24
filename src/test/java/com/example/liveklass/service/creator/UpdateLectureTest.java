@@ -1,15 +1,14 @@
 package com.example.liveklass.service.creator;
 
-import com.example.liveklass.domain.Lecture;
-import com.example.liveklass.domain.LectureType;
-import com.example.liveklass.domain.Member;
-import com.example.liveklass.domain.MemberRole;
+import com.example.liveklass.domain.*;
+import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
 import com.example.liveklass.service.CreatorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,31 +35,45 @@ public class UpdateLectureTest {
     @InjectMocks
     CreatorService creatorService;
 
-    @Test
-    @DisplayName("강의 수정 성공")
-    void updateLecture_success() {
+    String userName = "teacher1";
+    Long lectureId = 1L;
+    LocalDateTime salesStart = LocalDateTime.parse("2026-05-01T09:00:00");
+    LocalDateTime salesEnd = LocalDateTime.parse("2026-05-03T09:00:00");
+    LocalDateTime lectureStartAt = LocalDateTime.parse("2026-05-05T09:00:00");
+    LocalDateTime lectureEndAt = LocalDateTime.parse("2026-05-10T09:00:00");
+    Member creator;
+    LectureUpdateRequest request;
+    Lecture lecture;
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
-        Member creator = Member.builder()
+    @BeforeEach
+    void setUp() {
+        creator = Member.builder()
                 .userName(userName)
                 .role(MemberRole.CREATOR)
                 .build();
 
-        Lecture lecture = Lecture.builder()
+        lecture = Lecture.builder()
                 .id(lectureId)
                 .creator(creator)
                 .title("기존 제목")
                 .currentEnrollmentCount(10)
+                .basePrice(50000L)
+                .salesStartAt(salesStart)
+                .salesEndAt(salesEnd)
+                .lectureStartAt(lectureStartAt)
+                .lectureEndAt(lectureEndAt)
+                .lectureStatus(LectureStatus.DRAFT)
                 .build();
 
-        LectureUpdateRequest request = new LectureUpdateRequest(
+       request = new LectureUpdateRequest(
                 "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
                 null, null, null, null
         );
+    }
 
+    @Test
+    @DisplayName("강의 수정 성공")
+    void updateLecture_success() {
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
 
@@ -75,15 +88,6 @@ public class UpdateLectureTest {
     @Test
     @DisplayName("강의 수정 실패 - 수정할 수강 정원이 현재 신청인원보다 적음")
     void updateLecture_fail_INVALID_CAPACITY_SETTING() {
-
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
-        Member creator = Member.builder()
-                .userName(userName)
-                .role(MemberRole.CREATOR)
-                .build();
 
         Lecture lecture = Lecture.builder()
                 .id(1L)
@@ -109,25 +113,9 @@ public class UpdateLectureTest {
     @DisplayName("강의 수정 실패 - 판매 시작일이 수강 시작일 이후")
     void updateLecture_fail_SALE_START_DATE_AFTER_LECTURE() {
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
         LocalDateTime salesStart = LocalDateTime.parse("2026-05-05T09:00:00");
         LocalDateTime salesEnd = LocalDateTime.parse("2026-05-08T09:00:00");
         LocalDateTime lectureStartAt = LocalDateTime.parse("2026-05-03T09:00:00");
-
-        Member creator = Member.builder()
-                .userName(userName)
-                .role(MemberRole.CREATOR)
-                .build();
-
-        Lecture lecture = Lecture.builder()
-                .id(1L)
-                .creator(creator)
-                .title("기존 제목")
-                .currentEnrollmentCount(10)
-                .build();
 
         LectureUpdateRequest request = new LectureUpdateRequest(
                 "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
@@ -146,25 +134,9 @@ public class UpdateLectureTest {
     @DisplayName("강의 수정 실패 - 판매 시작일이 판매 종료일 이후")
     void updateLecture_fail_INCORRECT_SALE_START_DATE() {
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
         LocalDateTime salesStart = LocalDateTime.parse("2026-05-05T09:00:00");
         LocalDateTime salesEnd = LocalDateTime.parse("2026-05-03T09:00:00");
         LocalDateTime lectureStartAt = LocalDateTime.parse("2026-05-10T09:00:00");
-
-        Member creator = Member.builder()
-                .userName(userName)
-                .role(MemberRole.CREATOR)
-                .build();
-
-        Lecture lecture = Lecture.builder()
-                .id(1L)
-                .creator(creator)
-                .title("기존 제목")
-                .currentEnrollmentCount(10)
-                .build();
 
         LectureUpdateRequest request = new LectureUpdateRequest(
                 "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
@@ -183,26 +155,10 @@ public class UpdateLectureTest {
     @DisplayName("강의 수정 실패 - 강의 시작일이 강의 종료일 이후")
     void updateLecture_fail_INCORRECT_LECTURE_START_DATE() {
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
         LocalDateTime salesStart = LocalDateTime.parse("2026-05-01T09:00:00");
         LocalDateTime salesEnd = LocalDateTime.parse("2026-05-03T09:00:00");
         LocalDateTime lectureStartAt = LocalDateTime.parse("2026-05-20T09:00:00");
         LocalDateTime lectureEndAt = LocalDateTime.parse("2026-05-10T09:00:00");
-
-        Member creator = Member.builder()
-                .userName(userName)
-                .role(MemberRole.CREATOR)
-                .build();
-
-        Lecture lecture = Lecture.builder()
-                .id(1L)
-                .creator(creator)
-                .title("기존 제목")
-                .currentEnrollmentCount(10)
-                .build();
 
         LectureUpdateRequest request = new LectureUpdateRequest(
                 "수정된 제목", "설명", 30, 50000L, LectureType.VOD,

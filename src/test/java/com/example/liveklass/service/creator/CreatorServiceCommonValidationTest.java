@@ -1,15 +1,14 @@
 package com.example.liveklass.service.creator;
 
-import com.example.liveklass.domain.Lecture;
-import com.example.liveklass.domain.LectureType;
-import com.example.liveklass.domain.Member;
-import com.example.liveklass.domain.MemberRole;
+import com.example.liveklass.domain.*;
+import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
 import com.example.liveklass.service.CreatorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,30 +34,36 @@ public class CreatorServiceCommonValidationTest {
     @InjectMocks
     CreatorService creatorService;
 
-    @Test
-    @DisplayName("공통 에러 - 사용자를 찾지 못함")
-    void global_fail_MEMBER_NOT_FOUND() {
+    String userName = "teacher1";
+    Long lectureId = 1L;
+    Member creator;
+    Lecture lecture;
+    LectureUpdateRequest request;
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
-        Member creator = Member.builder()
+    @BeforeEach
+    void setUp() {
+        creator = Member.builder()
                 .userName(userName)
                 .role(MemberRole.CREATOR)
                 .build();
 
-        Lecture lecture = Lecture.builder()
+        lecture = Lecture.builder()
                 .id(lectureId)
                 .creator(creator)
                 .title("기존 제목")
                 .currentEnrollmentCount(10)
+                .basePrice(50000L)
+                .lectureStatus(LectureStatus.DRAFT)
                 .build();
-
         LectureUpdateRequest request = new LectureUpdateRequest(
                 "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
                 null, null, null, null
         );
+    }
+
+    @Test
+    @DisplayName("공통 에러 - 사용자를 찾지 못함")
+    void global_fail_MEMBER_NOT_FOUND() {
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.empty());
 
@@ -70,27 +75,10 @@ public class CreatorServiceCommonValidationTest {
     @Test
     @DisplayName("공통 에러 - 강사 권한 없음")
     void global_fail_FORBIDDEN() {
-
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
         Member creator = Member.builder()
                 .userName(userName)
                 .role(MemberRole.STUDENT)
                 .build();
-
-        Lecture lecture = Lecture.builder()
-                .id(lectureId)
-                .creator(creator)
-                .title("기존 제목")
-                .currentEnrollmentCount(10)
-                .build();
-
-        LectureUpdateRequest request = new LectureUpdateRequest(
-                "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
-                null, null, null, null
-        );
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
 
@@ -103,27 +91,6 @@ public class CreatorServiceCommonValidationTest {
     @DisplayName("공통 에러 - 해당 강의가 존재하지 않음")
     void global_fail_LECTURE_NOT_FOUND() {
 
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
-        Member creator = Member.builder()
-                .userName(userName)
-                .role(MemberRole.CREATOR)
-                .build();
-
-        Lecture lecture = Lecture.builder()
-                .id(100L)
-                .creator(creator)
-                .title("기존 제목")
-                .currentEnrollmentCount(10)
-                .build();
-
-        LectureUpdateRequest request = new LectureUpdateRequest(
-                "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
-                null, null, null, null
-        );
-
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.empty());
 
@@ -135,11 +102,6 @@ public class CreatorServiceCommonValidationTest {
     @Test
     @DisplayName("공통 에러 - 사용자가 강의 생성자가 아님")
     void global_fail_NOT_LECTURE_CREATOR() {
-
-        String userName = "teacher1";
-
-        Long lectureId = 1L;
-
         Member lectureCreator = Member.builder()
                 .userName("lectureOwner")
                 .role(MemberRole.CREATOR)
@@ -156,11 +118,6 @@ public class CreatorServiceCommonValidationTest {
                 .title("기존 제목")
                 .currentEnrollmentCount(10)
                 .build();
-
-        LectureUpdateRequest request = new LectureUpdateRequest(
-                "수정된 제목", "설명", 30, 50000L, LectureType.VOD,
-                null, null, null, null
-        );
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(requestCreator));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
