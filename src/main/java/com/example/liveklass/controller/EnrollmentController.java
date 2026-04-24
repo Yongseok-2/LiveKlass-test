@@ -3,6 +3,7 @@ package com.example.liveklass.controller;
 import com.example.liveklass.document.EnrollmentApiDocument;
 import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.enrollment.PaymentRequest;
+import com.example.liveklass.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,12 +17,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/enrollment")
 public class EnrollmentController {
 
+    EnrollmentService enrollmentService;
+
     @EnrollmentApiDocument.SubscribeErrorResponse
     @Operation(summary = "강의 신청", description = "신청할 강의 ID를 받아 강의를 신청합니다.")
     @PostMapping("/{lectureId}/subscribe")
-    public ResponseEntity<ApiResponse<Void>> subEnrollment(@PathVariable Long lectureId) {
+    public ResponseEntity<ApiResponse<Void>> subEnrollment(
+            @PathVariable Long lectureId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: userService.subEnrollment(lectureId);
+        enrollmentService.subEnrollment(lectureId, userName);
         return ResponseEntity.ok(ApiResponse.ok());
     }
 

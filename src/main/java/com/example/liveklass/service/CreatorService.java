@@ -47,19 +47,7 @@ public class CreatorService {
     @Transactional
     public Long updateLecture(LectureUpdateRequest request, Long lectureId, String userName) {
 
-        Member creator = memberRepository.findByUserName(userName)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        if(creator.getRole() != (MemberRole.CREATOR)) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
-
-        if (!lecture.getCreator().getUserName().equals(userName)) {
-            throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
-        }
+        Lecture lecture = memberAndLectureValid(lectureId, userName);
 
         lecture.updateBasicInfo(
                 request.title(),
@@ -82,19 +70,7 @@ public class CreatorService {
     @Transactional
     public void closeLecture(Long lectureId, String userName) {
 
-        Member creator = memberRepository.findByUserName(userName)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        if(creator.getRole() != (MemberRole.CREATOR)) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
-
-        if (!lecture.getCreator().getUserName().equals(userName)) {
-            throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
-        }
+        Lecture lecture = memberAndLectureValid(lectureId, userName);
 
         lecture.closeLecture();
     }
@@ -102,19 +78,7 @@ public class CreatorService {
     @Transactional
     public void deleteLecture(Long lectureId, String userName) {
 
-        Member creator = memberRepository.findByUserName(userName)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        if(creator.getRole() != (MemberRole.CREATOR)) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
-        }
-
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
-
-        if (!lecture.getCreator().getUserName().equals(userName)) {
-            throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
-        }
+        Lecture lecture = memberAndLectureValid(lectureId, userName);
 
         lectureRepository.delete(lecture);
     }
@@ -137,6 +101,16 @@ public class CreatorService {
 
     public MyLectureDetailResponse getMyLecture(Long lectureId, String userName, Pageable pageable) {
 
+        Lecture lecture = memberAndLectureValid(lectureId, userName);
+
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureId(lectureId, pageable);
+
+        Page<CurrentEnrollmentListDto> enrollmentDtoPage = enrollmentPage.map(CurrentEnrollmentListDto::from);
+
+        return MyLectureDetailResponse.from(lecture, enrollmentDtoPage);
+    }
+
+    public Lecture memberAndLectureValid(Long lectureId, String userName) {
         Member creator = memberRepository.findByUserName(userName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -151,10 +125,6 @@ public class CreatorService {
             throw new CustomException(ErrorCode.NOT_LECTURE_CREATOR);
         }
 
-        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureId(lectureId, pageable);
-
-        Page<CurrentEnrollmentListDto> enrollmentDtoPage = enrollmentPage.map(CurrentEnrollmentListDto::from);
-
-        return MyLectureDetailResponse.from(lecture, enrollmentDtoPage);
+        return lecture;
     }
 }
