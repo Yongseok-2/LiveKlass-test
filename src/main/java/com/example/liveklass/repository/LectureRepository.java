@@ -7,7 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LectureRepository extends JpaRepository<Lecture, Long> {
+import java.util.Optional;
+
+public interface  LectureRepository extends JpaRepository<Lecture, Long> {
+
+    @Override
+    @EntityGraph(attributePaths = {"creator"})
+    Optional<Lecture> findById(Long lectureId);
+
+    @EntityGraph(attributePaths = {"creator"})
     Page<Lecture> findAllByCreator_UserNameAndLectureStatus(String userName, LectureStatus status, Pageable pageable);
 
     @EntityGraph(attributePaths = {"creator"})

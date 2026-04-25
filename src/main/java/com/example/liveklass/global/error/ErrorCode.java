@@ -23,6 +23,7 @@ public enum ErrorCode {
     INVALID_CAPACITY_SETTING(HttpStatus.BAD_REQUEST, "L007", "정원은 현재 수강 인원보다 적게 설정할 수 없습니다."),
     NOT_LECTURE_CREATOR(HttpStatus.BAD_REQUEST, "L008", "강의 생성자만 수정 가능합니다."),
     SALE_START_DATE_AFTER_LECTURE(HttpStatus.BAD_REQUEST, "L009", "판매 시작일은 강의 시작 이전이어야 합니다."),
+    LECTURE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "L010", "아직 공개 되지않은 강의입니다."),
 
     // Enrollment (수강 신청/결제)
     ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "E001", "이미 취소된 수강 신청입니다."),

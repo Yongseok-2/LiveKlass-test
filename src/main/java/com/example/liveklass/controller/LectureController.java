@@ -34,10 +34,12 @@ public class LectureController {
     @LectureApiDocument.DetailErrorResponse
     @Operation(summary = "강의 상세 조회", description = "강의 ID를 이용해 상세 정보 및 VOD 목록을 조회합니다.")
     @GetMapping("/{lectureId}")
-    public ResponseEntity<ApiResponse<LectureDetailResponse>> getLectureDetail(@PathVariable Long lectureId) {
+    public ResponseEntity<ApiResponse<LectureDetailResponse>> getLectureDetail(
+            @PathVariable Long lectureId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: lectureService.getLectureDetail(lectureId)
+        LectureDetailResponse response = lectureService.getLectureDetail(lectureId, userName);
 
-        return ResponseEntity.ok(ApiResponse.ok(null));
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

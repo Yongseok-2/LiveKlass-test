@@ -15,6 +15,9 @@ public record MyLectureListDto(
         @Schema(description = "강의 제목", example = "Spring Boot 입문")
         String title,
 
+        @Schema(description = "강사 이름", example = "홍길동")
+        String creatorName,
+
         @Schema(description = "강의 상태", example = "OPEN")
         LectureStatus lectureStatus,
 
@@ -37,6 +40,7 @@ public record MyLectureListDto(
         return new MyLectureListDto(
                 lecture.getId(),
                 lecture.getTitle(),
+                lecture.getCreator().getName(),
                 lecture.getLectureStatus(),
                 lecture.getLectureType(),
                 lecture.getCurrentEnrollmentCount(),

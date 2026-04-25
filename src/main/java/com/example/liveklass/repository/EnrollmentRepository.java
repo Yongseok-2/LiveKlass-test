@@ -7,7 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findAllByLectureId(Long lectureId, Pageable pageable);
     boolean existsByMemberAndLecture(Member member, Lecture lecture);
+    Optional<Enrollment> findByMemberAndLecture(Member member, Lecture lecture);
 }

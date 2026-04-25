@@ -47,9 +47,12 @@ public record LectureDetailResponse(
         LocalDateTime lectureStartAt,
 
         @Schema(description = "강의 종료일", example = "2026-05-10T09:00:00")
-        LocalDateTime lectureEndAt
+        LocalDateTime lectureEndAt,
+
+        @Schema(description = "로그인한 사용자의 신청여부", example = "2026-05-10T09:00:00")
+        boolean isEnrolled
 ) {
-    public static LectureDetailResponse from(Lecture lecture) {
+    public static LectureDetailResponse from(Lecture lecture, boolean isEnrolled) {
         return new LectureDetailResponse(
                 lecture.getCreator().getName(),
                 lecture.getTitle(),
@@ -63,7 +66,8 @@ public record LectureDetailResponse(
                 lecture.getSalesStartAt(),
                 lecture.getSalesEndAt(),
                 lecture.getLectureStartAt(),
-                lecture.getLectureEndAt()
+                lecture.getLectureEndAt(),
+                isEnrolled
         );
     }
 }
