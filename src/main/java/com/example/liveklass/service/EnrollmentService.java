@@ -64,7 +64,7 @@ public class EnrollmentService {
     public void confirmEnrollment(@Valid PaymentRequest request, Long enrollmentId, String userName) {
 
         Member user = memberValid(userName);
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+        Enrollment enrollment = enrollmentRepository.findWithMemberAndLectureById(enrollmentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
         if (!Objects.equals(enrollment.getMember().getUserName(), user.getUserName())) {
@@ -83,7 +83,7 @@ public class EnrollmentService {
 
         Member user = memberValid(userName);
 
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+        Enrollment enrollment = enrollmentRepository.findWithMemberAndLectureById(enrollmentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
         if (!Objects.equals(enrollment.getMember().getUserName(), user.getUserName())) {

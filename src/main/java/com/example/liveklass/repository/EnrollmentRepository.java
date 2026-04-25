@@ -15,7 +15,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findAllByLectureId(Long lectureId, Pageable pageable);
     boolean existsByMemberAndLecture(Member member, Lecture lecture);
 
-    @EntityGraph(attributePaths = {"member", "lecture"})
     Optional<Enrollment> findByMemberAndLecture(Member member, Lecture lecture);
 
     @EntityGraph(attributePaths = {"lecture.creator", "lecture"})
@@ -23,4 +22,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     @EntityGraph(attributePaths = {"lecture.creator", "lecture"})
     Page<Enrollment> findAllByMemberIdAndStatusNot(Long id, EnrollmentStatus enrollmentStatus, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"member", "lecture"})
+    Optional<Enrollment> findWithMemberAndLectureById(Long id);
 }
