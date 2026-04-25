@@ -12,7 +12,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    Page<Enrollment> findAllByLectureId(Long lectureId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"member"})
+    Page<Enrollment> findAllByLectureIdAndStatusNot(Long lectureId, Pageable pageable, EnrollmentStatus enrollmentStatus);
+
     boolean existsByMemberAndLectureAndStatusNot(Member member, Lecture lecture, EnrollmentStatus enrollmentStatus);
 
     Optional<Enrollment> findByMemberAndLecture(Member member, Lecture lecture);

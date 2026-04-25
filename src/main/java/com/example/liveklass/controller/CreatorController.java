@@ -114,7 +114,7 @@ public class CreatorController {
             @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName,
             @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        MyLectureDetailResponse response = creatorService.getMyLecture(lectureId, userName, pageable);
+        MyLectureDetailResponse response = creatorService.getMyLectureDetail(lectureId, userName, pageable);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

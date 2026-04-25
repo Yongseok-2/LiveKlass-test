@@ -68,7 +68,7 @@ public class SubEnrollmentTest {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
-        given(enrollmentRepository.existsByMemberAndLecture(user, lecture)).willReturn(false);
+        given(enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)).willReturn(false);
 
         // when
         enrollmentService.subEnrollment(lectureId, userName);
@@ -98,7 +98,7 @@ public class SubEnrollmentTest {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
-        given(enrollmentRepository.existsByMemberAndLecture(user, lecture)).willReturn(true);
+        given(enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)).willReturn(true);
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,
@@ -120,7 +120,7 @@ public class SubEnrollmentTest {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
-        given(enrollmentRepository.existsByMemberAndLecture(user, lecture)).willReturn(false);
+        given(enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)).willReturn(false);
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,

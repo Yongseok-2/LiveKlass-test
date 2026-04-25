@@ -104,17 +104,25 @@ public class CreatorService {
 
         Pageable pageable = request.toPageable();
 
-        Page<Lecture> lecturePage = lectureRepository.findAllByCreator_UserNameAndLectureStatus(userName, lectureStatus, pageable);
+        Page<Lecture> lecturePage;
+
+        if (lectureStatus == null) {
+            // 상태 값이 없으면 전부 다 가져오기
+            lecturePage = lectureRepository.findAllByCreator_UserName(userName, pageable);
+        } else {
+            // 상태 값이 있으면 해당 상태만 필터링
+            lecturePage = lectureRepository.findAllByCreator_UserNameAndLectureStatus(userName, lectureStatus, pageable);
+        }
 
         return lecturePage.map(MyLectureListDto::from);
     }
 
     @Transactional
-    public MyLectureDetailResponse getMyLecture(Long lectureId, String userName, Pageable pageable) {
+    public MyLectureDetailResponse getMyLectureDetail(Long lectureId, String userName, Pageable pageable) {
 
         Lecture lecture = memberAndLectureValid(lectureId, userName);
 
-        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureId(lectureId, pageable);
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureIdAndStatusNot(lectureId, pageable, EnrollmentStatus.CANCELLED);
 
         Page<CurrentEnrollmentListDto> enrollmentDtoPage = enrollmentPage.map(CurrentEnrollmentListDto::from);
 

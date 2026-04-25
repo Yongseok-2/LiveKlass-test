@@ -23,4 +23,7 @@ public interface  LectureRepository extends JpaRepository<Lecture, Long> {
 
     @EntityGraph(attributePaths = {"creator"})
     Page<Lecture> findAllByTitleContainingAndLectureStatus(String title, LectureStatus lectureStatus, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"creator"})
+    Page<Lecture> findAllByCreator_UserName(String userName, Pageable pageable);
 }
