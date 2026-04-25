@@ -1,7 +1,6 @@
 package com.example.liveklass.service.creator;
 
 import com.example.liveklass.domain.*;
-import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;

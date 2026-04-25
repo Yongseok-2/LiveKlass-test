@@ -36,15 +36,6 @@ public class Enrollment extends BaseEntity {
 
     private LocalDateTime refundDeadline;
 
-    public boolean canRefund(LocalDateTime requestTime) {
-
-        if (this.refundDeadline == null) {
-            return false;
-        }
-
-        return !requestTime.isAfter(this.refundDeadline);
-    }
-
     public void confirmEnrollment(LocalDateTime paymentTime, Long paidAmount) {
 
         if(this.status != EnrollmentStatus.PENDING) {
@@ -70,11 +61,12 @@ public class Enrollment extends BaseEntity {
             throw new CustomException(ErrorCode.ALREADY_CANCELED);
         }
 
-        if(this.status == EnrollmentStatus.CONFIRMED && !canRefund(requestTime)) {
+        if(this.status == EnrollmentStatus.CONFIRMED && requestTime.isAfter(this.refundDeadline)) {
             // 환불 가능 기간이 지났습니다.
             throw new CustomException(ErrorCode.REFUND_PERIOD_EXPIRED);
         }
 
         this.status = EnrollmentStatus.CANCELLED;
+        this.lecture.decreaseCurrentEnrollmentCount(requestTime);
     }
 }

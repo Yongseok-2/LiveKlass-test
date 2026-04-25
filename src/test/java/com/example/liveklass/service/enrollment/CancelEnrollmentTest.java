@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class ConfirmEnrollmentTest {
+public class CancelEnrollmentTest {
 
     @Mock
     private MemberRepository memberRepository;
@@ -43,6 +44,8 @@ public class ConfirmEnrollmentTest {
     private Member user;
     private Lecture lecture;
     private Enrollment enrollment;
+    LocalDateTime paymentAt = LocalDateTime.parse("2026-03-12T09:00:00");
+    LocalDateTime refundDeadLine = LocalDateTime.parse("2026-12-12T09:00:00");
 
     @BeforeEach
     void setUp() {
@@ -59,109 +62,100 @@ public class ConfirmEnrollmentTest {
                 .id(enrollmentId)
                 .member(user)
                 .lecture(lecture)
-                .status(EnrollmentStatus.PENDING).build();
+                .paidAmount(50000L)
+                .paymentAt(paymentAt)
+                .refundDeadline(refundDeadLine)
+                .status(EnrollmentStatus.CONFIRMED).build();
     }
 
     @Test
-    @DisplayName("결제 확정 성공")
+    @DisplayName("결제 취소 성공")
     void confirmEnrollment_success() {
         // given
-        PaymentRequest request = new PaymentRequest(lecturePrice);
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when
-        enrollmentService.confirmEnrollment(request, enrollmentId, userName);
+        enrollmentService.cancelEnrollment(enrollmentId, userName);
 
         // then
-        assertThat(enrollment.getStatus()).isEqualTo(EnrollmentStatus.CONFIRMED);
-        assertThat(enrollment.getPaidAmount()).isEqualTo(lecturePrice);
-        assertThat(enrollment.getPaymentAt()).isNotNull();
-        assertThat(enrollment.getRefundDeadline()).isNotNull();
+        assertThat(enrollment.getStatus()).isEqualTo(EnrollmentStatus.CANCELLED);
     }
 
     @Test
-    @DisplayName("결제 확정 실패 - 본인의 수강 내역이 아님")
-    void confirmEnrollment_fail_FORBIDDEN() {
+    @DisplayName("결제 취소 실패 - 신청건을 찾지 못함")
+    void confirmEnrollment_fail_ENROLLMENT_NOT_FOUND() {
         // given
-        PaymentRequest request = new PaymentRequest(lecturePrice);
+        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
+        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.empty());
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> enrollmentService.cancelEnrollment(enrollmentId, userName));
+
+        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.ENROLLMENT_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("결제 취소 실패 - 본인의 수강 내역이 아님")
+    void confirmEnrollment_fail_FORBIDDEN() {
+
         Member otherUser = Member.builder().userName("hacker").build();
 
+        // given
         given(memberRepository.findByUserName("hacker")).willReturn(Optional.of(otherUser));
         given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
 
-        // when & then
         CustomException ex = assertThrows(CustomException.class,
-                () -> enrollmentService.confirmEnrollment(request, enrollmentId, "hacker"));
+                () -> enrollmentService.cancelEnrollment(enrollmentId, "hacker"));
 
         assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.FORBIDDEN);
     }
 
     @Test
-    @DisplayName("결제 확정 실패 - 실제 강의 가격과 지불 금액이 다름")
-    void confirmEnrollment_fail_INVALID_PAYMENT_AMOUNT() {
-        // given
-        PaymentRequest request = new PaymentRequest(100L);
-        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
-
-        // when & then
-        CustomException ex = assertThrows(CustomException.class,
-                () -> enrollmentService.confirmEnrollment(request, enrollmentId, userName));
-
-        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.INVALID_PAYMENT_AMOUNT);
-    }
-
-    @Test
-    @DisplayName("결제 확정 실패 - 대기 상태가 아닌 경우")
-    void confirmEnrollment_fail_NOT_PENDING() {
-        // given
-        PaymentRequest request = new PaymentRequest(lecturePrice);
-
-        Enrollment confirmedEnrollment = Enrollment.builder()
-                .id(enrollmentId)
-                .member(user)
-                .lecture(lecture)
-                .status(EnrollmentStatus.CONFIRMED)
-                .build();
-
-        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(confirmedEnrollment));
-
-        // when & then
-        CustomException ex = assertThrows(CustomException.class,
-                () -> enrollmentService.confirmEnrollment(request, enrollmentId, userName));
-
-        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.NOT_PENDING);
-    }
-
-    @Test
-    @DisplayName("결제 확정 실패 -  강의가 OPEN이 아닌 경우")
-    void confirmEnrollment_fail_SALE_PERIOD_EXPIRED() {
-        // given
-        PaymentRequest request = new PaymentRequest(lecturePrice);
-
-
-        lecture = Lecture.builder()
-                .id(1L)
-                .title("테스트 강의")
-                .basePrice(lecturePrice)
-                .lectureStatus(LectureStatus.CLOSED)
-                .build();
+    @DisplayName("결제 취소 실패 - 이미 취소된 신청건")
+    void confirmEnrollment_fail_ALREADY_CANCELED() {
 
         enrollment = Enrollment.builder()
                 .id(enrollmentId)
                 .member(user)
                 .lecture(lecture)
-                .status(EnrollmentStatus.PENDING).build();
+                .paidAmount(50000L)
+                .paymentAt(paymentAt)
+                .refundDeadline(refundDeadLine)
+                .status(EnrollmentStatus.CANCELLED).build();
 
+        // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
 
-        // when & then
         CustomException ex = assertThrows(CustomException.class,
-                () -> enrollmentService.confirmEnrollment(request, enrollmentId, userName));
+                () -> enrollmentService.cancelEnrollment(enrollmentId, userName));
 
-        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.SALE_PERIOD_EXPIRED);
+        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.ALREADY_CANCELED);
+    }
+
+    @Test
+    @DisplayName("결제 취소 실패 - 환불 가능 기간이 지남")
+    void confirmEnrollment_fail_REFUND_PERIOD_EXPIRED() {
+
+        LocalDateTime wrongDeadLine = LocalDateTime.parse("2026-03-30T09:00:00");
+
+        enrollment = Enrollment.builder()
+                .id(enrollmentId)
+                .member(user)
+                .lecture(lecture)
+                .paidAmount(50000L)
+                .paymentAt(paymentAt)
+                .refundDeadline(wrongDeadLine)
+                .status(EnrollmentStatus.CONFIRMED).build();
+
+        // given
+        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
+        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> enrollmentService.cancelEnrollment(enrollmentId, userName));
+
+        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.REFUND_PERIOD_EXPIRED);
     }
 }

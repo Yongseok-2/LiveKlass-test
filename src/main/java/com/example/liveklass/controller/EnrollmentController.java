@@ -42,21 +42,14 @@ public class EnrollmentController {
         return ResponseEntity.ok(ApiResponse.ok());
     }
 
-    @EnrollmentApiDocument.RefundErrorResponse
-    @Operation(summary = "신청한 강의 환불", description = "신청ID를 받아 신청한 강의를 환불합니다.")
-    @PatchMapping("/{enrollmentId}/refund")
-    public ResponseEntity<ApiResponse<Void>> refundEnrollment(@PathVariable Long enrollmentId) {
-
-        // TODO: userService.refundEnrollment(enrollmentId);
-        return ResponseEntity.ok(ApiResponse.ok());
-    }
-
     @EnrollmentApiDocument.CancelErrorResponse
     @Operation(summary = "신청한 강의 취소", description = "신청ID를 받아 신청한 강의를 취소합니다.")
     @PatchMapping("/{enrollmentId}/cancel")
-    public ResponseEntity<ApiResponse<Void>> cancelEnrollment(@PathVariable Long enrollmentId) {
+    public ResponseEntity<ApiResponse<Void>> cancelEnrollment(
+            @PathVariable Long enrollmentId,
+            @SessionAttribute(name = "userName") String userName) {
 
-        // TODO: userService.cancelEnrollment(enrollmentId);
+        enrollmentService.cancelEnrollment(enrollmentId, userName);
         return ResponseEntity.ok(ApiResponse.ok());
     }
 }

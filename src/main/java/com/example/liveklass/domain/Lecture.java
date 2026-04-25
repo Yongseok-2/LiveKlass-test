@@ -150,4 +150,10 @@ public class Lecture extends BaseEntity {
         this.currentEnrollmentCount++;
     }
 
+    public void decreaseCurrentEnrollmentCount(LocalDateTime requestTime) {
+        if (this.currentEnrollmentCount > 0) {
+            this.currentEnrollmentCount--;
+        }
+    }
+
 }
