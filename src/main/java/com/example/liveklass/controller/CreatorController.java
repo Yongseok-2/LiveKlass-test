@@ -11,9 +11,11 @@ import com.example.liveklass.dto.lecture.LectureCreateRequest;
 import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.service.CreatorService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,19 +37,19 @@ public class CreatorController {
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createLecture(
             @Valid @RequestBody LectureCreateRequest request,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName) {
 
         Long lectureId = creatorService.createLecture(request, userName);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(lectureId));
     }
 
-    @CreatorApiDocument.UpdateLectureErrorResponse
+    @CreatorApiDocument.OpenLectureErrorResponse
     @Operation(summary = "강의 오픈", description = "기존 강의에 임시로 등록 되어있던 강의를 오픈합니다.")
     @PatchMapping("/{lectureId}/open")
     public ResponseEntity<ApiResponse<Long>> openLecture(
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName) {
 
         Long openId = creatorService.openLecture(lectureId, userName);
 
@@ -60,7 +62,7 @@ public class CreatorController {
     public ResponseEntity<ApiResponse<Long>> updateLecture(
             @Valid @RequestBody LectureUpdateRequest request,
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName) {
 
         Long updateId = creatorService.updateLecture(request, lectureId, userName);
 
@@ -72,7 +74,7 @@ public class CreatorController {
     @PatchMapping("/{lectureId}/close")
     public ResponseEntity<ApiResponse<Void>> closeLecture(
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName) {
 
         creatorService.closeLecture(lectureId, userName);
 
@@ -84,7 +86,7 @@ public class CreatorController {
     @DeleteMapping("/{lectureId}")
     public ResponseEntity<ApiResponse<Void>> deleteLecture(
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName) {
 
         creatorService.deleteLecture(lectureId, userName);
 
@@ -95,8 +97,8 @@ public class CreatorController {
     @Operation(summary = "내가 생성한 강의 목록", description = "내가 생성한 강의를 페이징하여 반환합니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<PagedResponse<MyLectureListDto>>> getMyLectureList(
-            @Valid @ModelAttribute MyLectureSearchRequest request,
-            @SessionAttribute(name = "userName") String userName,
+            @ParameterObject @Valid @ModelAttribute MyLectureSearchRequest request,
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName,
             LectureStatus lectureStatus) {
 
         Page<MyLectureListDto> page = creatorService.getMyLectureList(request, userName, lectureStatus);
@@ -109,8 +111,8 @@ public class CreatorController {
     @GetMapping("/{lectureId}/detail")
     public ResponseEntity<ApiResponse<MyLectureDetailResponse>> getMyLecture(
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName,
+            @ParameterObject @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         MyLectureDetailResponse response = creatorService.getMyLecture(lectureId, userName, pageable);
 

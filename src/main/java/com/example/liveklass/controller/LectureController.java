@@ -6,9 +6,11 @@ import com.example.liveklass.dto.global.PagedResponse;
 import com.example.liveklass.dto.lecture.*;
 import com.example.liveklass.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +23,11 @@ public class LectureController {
 
     private final LectureService lectureService;
 
+    @LectureApiDocument.ListErrorResponse
     @Operation(summary = "강의 목록 조회", description = "등록된 강의의 목록을 페이징하여 반환합니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<PagedResponse<LectureListDto>>> getLectureList(
-            @Valid @ModelAttribute LectureSearchRequest request) {
+            @ParameterObject  @Valid @ModelAttribute LectureSearchRequest request) {
 
         Page<LectureListDto> page = lectureService.getLectureList(request);
 
@@ -36,7 +39,7 @@ public class LectureController {
     @GetMapping("/{lectureId}")
     public ResponseEntity<ApiResponse<LectureDetailResponse>> getLectureDetail(
             @PathVariable Long lectureId,
-            @SessionAttribute(name = "userName") String userName) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userName", required = false) String userName) {
 
         LectureDetailResponse response = lectureService.getLectureDetail(lectureId, userName);
 

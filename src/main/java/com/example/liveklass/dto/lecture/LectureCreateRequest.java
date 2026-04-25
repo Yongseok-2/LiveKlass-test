@@ -24,16 +24,17 @@ public record LectureCreateRequest (
         @Schema(description = "강의 설명", example = "Spring Boot 입문 강의입니다.")
         String description,
 
-        @PositiveOrZero(message = "0이면 제한 없음 / 최소 수강 인원은 1명 이상이어야 합니다.")
+        @PositiveOrZero(message = "최소 수강 인원은 1명 이상이어야 합니다.")
         @Schema(description = "수강 정원 / 제한없다면 0", example = "30")
         Integer maxCapacity,
 
-        @PositiveOrZero(message = "가격은 0원 이상이어야 합니다. / 무료면 0")
+        @PositiveOrZero(message = "가격은 0원 이상이어야 합니다.")
         @NotNull(message = "가격은 필수입니다.")
         @Schema(description = "강의 가격 / 무료면 0", example = "30000")
         Long basePrice,
 
-        @NotNull(message = "강의 유형은 필수입니다 (LIVE, VOD)")
+        @NotNull(message = "강의 유형은 필수입니다.")
+        @Schema(description = "강의 유형 (LIVE, VOD)", example = "LIVE")
         LectureType lectureType
 ){
         public Lecture toEntity(Member creator) {
