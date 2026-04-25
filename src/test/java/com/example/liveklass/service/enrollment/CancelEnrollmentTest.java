@@ -70,7 +70,7 @@ public class CancelEnrollmentTest {
 
     @Test
     @DisplayName("결제 취소 성공")
-    void confirmEnrollment_success() {
+    void cancelEnrollment_success() {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
@@ -84,7 +84,7 @@ public class CancelEnrollmentTest {
 
     @Test
     @DisplayName("결제 취소 실패 - 신청건을 찾지 못함")
-    void confirmEnrollment_fail_ENROLLMENT_NOT_FOUND() {
+    void cancelEnrollment_fail_ENROLLMENT_NOT_FOUND() {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.empty());
@@ -97,7 +97,7 @@ public class CancelEnrollmentTest {
 
     @Test
     @DisplayName("결제 취소 실패 - 본인의 수강 내역이 아님")
-    void confirmEnrollment_fail_FORBIDDEN() {
+    void cancelEnrollment_fail_FORBIDDEN() {
 
         Member otherUser = Member.builder().userName("hacker").build();
 
@@ -113,7 +113,7 @@ public class CancelEnrollmentTest {
 
     @Test
     @DisplayName("결제 취소 실패 - 이미 취소된 신청건")
-    void confirmEnrollment_fail_ALREADY_CANCELED() {
+    void cancelEnrollment_fail_ALREADY_CANCELED() {
 
         enrollment = Enrollment.builder()
                 .id(enrollmentId)
@@ -136,7 +136,7 @@ public class CancelEnrollmentTest {
 
     @Test
     @DisplayName("결제 취소 실패 - 환불 가능 기간이 지남")
-    void confirmEnrollment_fail_REFUND_PERIOD_EXPIRED() {
+    void cancelEnrollment_fail_REFUND_PERIOD_EXPIRED() {
 
         LocalDateTime wrongDeadLine = LocalDateTime.parse("2026-03-30T09:00:00");
 
