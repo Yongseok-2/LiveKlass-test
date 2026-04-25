@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findAllByLectureId(Long lectureId, Pageable pageable);
     boolean existsByMemberAndLecture(Member member, Lecture lecture);
+
+    @EntityGraph(attributePaths = {"member", "lecture"})
     Optional<Enrollment> findByMemberAndLecture(Member member, Lecture lecture);
 
     @EntityGraph(attributePaths = {"lecture.creator", "lecture"})

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class EnrollmentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
-        if(!enrollment.getMember().getUserName().equals(user.getUserName())) {
+        if (!Objects.equals(enrollment.getMember().getUserName(), user.getUserName())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
@@ -85,7 +86,7 @@ public class EnrollmentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
-        if(!enrollment.getMember().getUserName().equals(user.getUserName())) {
+        if (!Objects.equals(enrollment.getMember().getUserName(), user.getUserName())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
@@ -108,7 +109,8 @@ public class EnrollmentService {
 
         Pageable pageable = request.toPageable();
 
-        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberIdAndStatusNot(member.getId(), EnrollmentStatus.PENDING, pageable);
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberIdAndStatusNot(member.getId(),
+                EnrollmentStatus.PENDING, pageable);
 
         return enrollmentPage.map(PaymentHistoryResponse::from);
     }
