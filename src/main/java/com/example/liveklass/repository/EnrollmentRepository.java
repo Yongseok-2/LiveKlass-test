@@ -1,6 +1,7 @@
 package com.example.liveklass.repository;
 
 import com.example.liveklass.domain.Enrollment;
+import com.example.liveklass.domain.EnrollmentStatus;
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.Member;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     @EntityGraph(attributePaths = {"lecture.creator", "lecture"})
     Page<Enrollment> findAllByMemberId(Long id, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"lecture.creator", "lecture"})
+    Page<Enrollment> findAllByMemberIdAndStatusNot(Long id, EnrollmentStatus enrollmentStatus, Pageable pageable);
 }

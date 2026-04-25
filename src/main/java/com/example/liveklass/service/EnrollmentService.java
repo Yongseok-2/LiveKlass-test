@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -102,6 +103,15 @@ public class EnrollmentService {
         return enrollmentPage.map(MyEnrollmentListDto::from);
     }
 
+    public Page<PaymentHistoryResponse> getPaymentHistory(@Valid PaymentHistoryRequest request, String userName) {
+        Member member = memberValid(userName);
+
+        Pageable pageable = request.toPageable();
+
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberIdAndStatusNot(member.getId(), EnrollmentStatus.PENDING, pageable);
+
+        return enrollmentPage.map(PaymentHistoryResponse::from);
+    }
 
     public Member memberValid(String userName) {
         return memberRepository.findByUserName(userName)
@@ -112,6 +122,4 @@ public class EnrollmentService {
         return lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
     }
-
-
 }

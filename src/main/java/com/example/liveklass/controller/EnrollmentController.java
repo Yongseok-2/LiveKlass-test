@@ -74,13 +74,13 @@ public class EnrollmentController {
 
     @Operation(summary = "나의 결제 목록", description = "결제 목록을 반환합니다.")
     @GetMapping("/payments")
-    public ResponseEntity<ApiResponse<PaymentHistoryResponse>> getPaymentHistory(
+    public ResponseEntity<ApiResponse<PagedResponse<PaymentHistoryResponse>>> getPaymentHistory(
             @Valid @ModelAttribute PaymentHistoryRequest request,
             @SessionAttribute(name = "userName") String userName
             ) {
 
-        //PaymentHistoryResponse response = enrollmentService.getPaymentHistory(request, userName);
+        Page<PaymentHistoryResponse> page = enrollmentService.getPaymentHistory(request, userName);
 
-        return ResponseEntity.ok(ApiResponse.ok(null));
+        return ResponseEntity.ok(ApiResponse.ok(PagedResponse.from(page)));
     }
 }

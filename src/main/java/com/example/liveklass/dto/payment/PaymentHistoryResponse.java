@@ -1,6 +1,8 @@
 package com.example.liveklass.dto.payment;
 
+import com.example.liveklass.domain.Enrollment;
 import com.example.liveklass.domain.EnrollmentStatus;
+import com.example.liveklass.dto.enrollment.MyEnrollmentListDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,7 @@ public record PaymentHistoryResponse(
         Long enrollmentId,
 
         @Schema(description = "결제된 강의 제목", example = "Spring Boot 입문")
-        String lectureTitle,
+        String title,
 
         @Schema(description = "결제 금액", example = "30000")
         Long paidAmount,
@@ -25,4 +27,14 @@ public record PaymentHistoryResponse(
         @Schema(description = "환불 기한", example = "2026-05-08T09:00:00")
         LocalDateTime refundDeadline
 ) {
+        public static PaymentHistoryResponse from(Enrollment enrollment) {
+                return new PaymentHistoryResponse(
+                        enrollment.getId(),
+                        enrollment.getLecture().getTitle(),
+                        enrollment.getPaidAmount(),
+                        enrollment.getStatus(),
+                        enrollment.getPaymentAt(),
+                        enrollment.getRefundDeadline()
+                );
+        }
 }
