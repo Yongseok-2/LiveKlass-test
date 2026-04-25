@@ -102,7 +102,7 @@ public class GetPaymentHistoryTest {
         Page<Enrollment> enrollmentePage = new PageImpl<>(List.of(enrollment), request.toPageable(), 1);
 
         given(memberRepository.findByUserName("user1")).willReturn(Optional.of(user));
-        given(enrollmentRepository.findAllByMemberIdAndStatusNot(eq(1L), eq(EnrollmentStatus.PENDING), any(Pageable.class))).willReturn(enrollmentePage);
+        given(enrollmentRepository.findAllByMemberIdAndStatusNotAndPaidAmountIsNotNull(eq(1L), eq(EnrollmentStatus.PENDING), any(Pageable.class))).willReturn(enrollmentePage);
 
         Page<PaymentHistoryResponse> result = enrollmentService.getPaymentHistory(request, "user1");
 
@@ -111,6 +111,6 @@ public class GetPaymentHistoryTest {
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).status()).isEqualTo(EnrollmentStatus.CONFIRMED);
 
-        verify(enrollmentRepository).findAllByMemberIdAndStatusNot(eq(1L), eq(EnrollmentStatus.PENDING), any(Pageable.class));
+        verify(enrollmentRepository).findAllByMemberIdAndStatusNotAndPaidAmountIsNotNull(eq(1L), eq(EnrollmentStatus.PENDING), any(Pageable.class));
     }
 }

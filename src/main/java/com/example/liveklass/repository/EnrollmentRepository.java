@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findAllByLectureId(Long lectureId, Pageable pageable);
-    boolean existsByMemberAndLecture(Member member, Lecture lecture);
+    boolean existsByMemberAndLectureAndStatusNot(Member member, Lecture lecture, EnrollmentStatus enrollmentStatus);
 
     Optional<Enrollment> findByMemberAndLecture(Member member, Lecture lecture);
 
@@ -21,7 +21,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Page<Enrollment> findAllByMemberId(Long id, Pageable pageable);
 
     @EntityGraph(attributePaths = {"lecture.creator", "lecture"})
-    Page<Enrollment> findAllByMemberIdAndStatusNot(Long id, EnrollmentStatus enrollmentStatus, Pageable pageable);
+    Page<Enrollment> findAllByMemberIdAndStatusNotAndPaidAmountIsNotNull(Long id, EnrollmentStatus enrollmentStatus, Pageable pageable);
 
     @EntityGraph(attributePaths = {"member", "lecture"})
     Optional<Enrollment> findWithMemberAndLectureById(Long id);

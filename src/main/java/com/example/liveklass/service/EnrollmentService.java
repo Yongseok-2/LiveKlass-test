@@ -42,7 +42,7 @@ public class EnrollmentService {
             throw new CustomException(ErrorCode.CANNOT_ENROLL_OWN_LECTURE);
         }
 
-        if (enrollmentRepository.existsByMemberAndLecture(user, lecture)) {
+        if (enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)) {
             throw new CustomException(ErrorCode.ALREADY_ENROLLED);
         }
 
@@ -109,7 +109,7 @@ public class EnrollmentService {
 
         Pageable pageable = request.toPageable();
 
-        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberIdAndStatusNot(member.getId(),
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberIdAndStatusNotAndPaidAmountIsNotNull(member.getId(),
                 EnrollmentStatus.PENDING, pageable);
 
         return enrollmentPage.map(PaymentHistoryResponse::from);
