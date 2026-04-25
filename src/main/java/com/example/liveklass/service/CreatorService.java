@@ -93,7 +93,7 @@ public class CreatorService {
     }
 
     @Transactional
-    public Page<MyLectureListDto> getMyLectureList(@Valid MyLectureSearchRequest request, String userName, LectureStatus lectureStatus) {
+    public Page<MyLectureListDto> getMyLectureList(MyLectureSearchRequest request, String userName, LectureStatus lectureStatus) {
 
         Member creator = memberRepository.findByUserName(userName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));

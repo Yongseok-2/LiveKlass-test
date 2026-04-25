@@ -1,7 +1,11 @@
 package com.example.liveklass.service;
 
 import com.example.liveklass.domain.*;
+import com.example.liveklass.dto.enrollment.MyEnrollmentListDto;
+import com.example.liveklass.dto.enrollment.MyEnrollmentRequest;
 import com.example.liveklass.dto.enrollment.PaymentRequest;
+import com.example.liveklass.dto.payment.PaymentHistoryRequest;
+import com.example.liveklass.dto.payment.PaymentHistoryResponse;
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.EnrollmentRepository;
@@ -10,6 +14,8 @@ import com.example.liveklass.repository.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +91,18 @@ public class EnrollmentService {
         enrollment.cancel(LocalDateTime.now());
     }
 
+    public Page<MyEnrollmentListDto> getEnrollmentList(MyEnrollmentRequest request, String userName) {
+
+        Member member = memberValid(userName);
+
+        Pageable pageable = request.toPageable();
+
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByMemberId(member.getId(), pageable);
+
+        return enrollmentPage.map(MyEnrollmentListDto::from);
+    }
+
+
     public Member memberValid(String userName) {
         return memberRepository.findByUserName(userName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -94,4 +112,6 @@ public class EnrollmentService {
         return lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
     }
+
+
 }

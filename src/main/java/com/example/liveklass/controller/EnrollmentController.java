@@ -1,13 +1,20 @@
 package com.example.liveklass.controller;
 
 import com.example.liveklass.document.EnrollmentApiDocument;
+import com.example.liveklass.document.UserApiDocument;
+import com.example.liveklass.dto.enrollment.MyEnrollmentListDto;
+import com.example.liveklass.dto.enrollment.MyEnrollmentRequest;
 import com.example.liveklass.dto.global.ApiResponse;
 import com.example.liveklass.dto.enrollment.PaymentRequest;
+import com.example.liveklass.dto.global.PagedResponse;
+import com.example.liveklass.dto.payment.PaymentHistoryRequest;
+import com.example.liveklass.dto.payment.PaymentHistoryResponse;
 import com.example.liveklass.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +58,29 @@ public class EnrollmentController {
 
         enrollmentService.cancelEnrollment(enrollmentId, userName);
         return ResponseEntity.ok(ApiResponse.ok());
+    }
+
+    @UserApiDocument.GetEnRollmentListErrorResponse
+    @Operation(summary = "신청한 강의 목록", description = "신청한 강의 목록을 페이징하여 반환합니다.")
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<PagedResponse<MyEnrollmentListDto>>> getEnrollmentList(
+            @Valid @ModelAttribute MyEnrollmentRequest request,
+            @SessionAttribute(name = "userName") String userName
+    ) {
+
+        Page<MyEnrollmentListDto> page = enrollmentService.getEnrollmentList(request, userName);
+        return ResponseEntity.ok(ApiResponse.ok(PagedResponse.from(page)));
+    }
+
+    @Operation(summary = "나의 결제 목록", description = "결제 목록을 반환합니다.")
+    @GetMapping("/payments")
+    public ResponseEntity<ApiResponse<PaymentHistoryResponse>> getPaymentHistory(
+            @Valid @ModelAttribute PaymentHistoryRequest request,
+            @SessionAttribute(name = "userName") String userName
+            ) {
+
+        //PaymentHistoryResponse response = enrollmentService.getPaymentHistory(request, userName);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

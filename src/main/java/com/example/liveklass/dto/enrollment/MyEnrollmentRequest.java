@@ -8,9 +8,6 @@ import org.springframework.data.domain.Sort;
 
 public record MyEnrollmentRequest(
 
-        @Schema(description = "강의 제목 검색어", example = "Spring")
-        String title,
-
         @Min(0)
         @Schema(description = "페이지 번호 (기본 0부터 시작)", example = "0")
         Integer page,
