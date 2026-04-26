@@ -76,7 +76,7 @@ public interface EnrollmentApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "E006", description = "본인 강의 신청 불가",
+            @ApiResponse(responseCode = "E006", description = "중복 수강 신청",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "BAD_REQUEST",
                                     value = """
@@ -195,7 +195,7 @@ public interface EnrollmentApiDocument {
                 """))),
             @ApiResponse(responseCode = "E008", description = "결제 금액 불일치",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "SALE_PERIOD_EXPIRED",
+                            examples = @ExampleObject(name = "INVALID_PAYMENT_AMOUNT",
                                     value = """
                 {
                   "success": false,
@@ -250,7 +250,7 @@ public interface EnrollmentApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "E001", description = "환불 기간 지남",
+            @ApiResponse(responseCode = "E002", description = "환불 기간 지남",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "REFUND_PERIOD_EXPIRED",
                                     value = """
@@ -291,7 +291,7 @@ public interface EnrollmentApiDocument {
                                                     "enrollmentId": 1,
                                                     "title": "Spring Boot 입문",
                                                     "creatorName": "홍길동",
-                                                    "status": "COMPLETED",
+                                                    "status": "CONFIRMED",
                                                     "enrolledAt": "2026-05-01T09:00:00",
                                                     "lectureStartAt": "2026-05-03T09:00:00"
                                                   }

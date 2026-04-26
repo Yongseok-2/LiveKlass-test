@@ -17,7 +17,7 @@ public record MyEnrollmentListDto(
         @Schema(description = "강사 이름", example = "홍길동")
         String creatorName,
 
-        @Schema(description = "수강 신청 상태 (PENDING, COMPLETED, CANCELED)", example = "COMPLETED")
+        @Schema(description = "수강 신청 상태 (PENDING, CONFIRMED, CANCELLED)", example = "CONFIRMED")
         EnrollmentStatus status,
 
         @Schema(description = "수강 신청 일시", example = "2026-05-01T09:00:00")

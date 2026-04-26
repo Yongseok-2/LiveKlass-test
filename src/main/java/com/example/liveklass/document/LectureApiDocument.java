@@ -87,7 +87,7 @@ public interface LectureApiDocument {
                                                   "salesEndAt": "2026-05-05T09:00:00",
                                                   "lectureStartAt": "2026-05-05T09:00:00",
                                                   "lectureEndAt": "2026-05-10T09:00:00",
-                                                  "isEnrolled": "2026-05-10T09:00:00"
+                                                  "isEnrolled": "true"
                                                 }
                 }
                 """))),
