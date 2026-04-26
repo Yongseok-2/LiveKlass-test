@@ -70,7 +70,7 @@ public class GetMyLectureListTest {
     }
 
     @Test
-    @DisplayName("내가 생성한 강의 목록 불러오기 성공")
+    @DisplayName("내가 생성한 강의 목록 불러오기 성공 - 상태값 필터 X")
     void getMyLectureList_success() {
 
         MyLectureSearchRequest request = new MyLectureSearchRequest("제목", null, 0, 10, "");
@@ -78,8 +78,8 @@ public class GetMyLectureListTest {
         Page<Lecture> lecturePage = new PageImpl<>(List.of(lecture), request.toPageable(), 1);
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
-        given(lectureRepository.findAllByCreator_UserNameAndLectureStatus(
-                eq(userName), eq(null), any(Pageable.class)
+        given(lectureRepository.findAllByCreator_UserName(
+                eq(userName), any(Pageable.class)
         )).willReturn(lecturePage);
 
         Page<MyLectureListDto> result = creatorService.getMyLectureList(request, userName, null);
@@ -88,6 +88,28 @@ public class GetMyLectureListTest {
         assertThat(result.getContent().get(0).title()).isEqualTo("기존 제목");
         assertThat(result.getTotalElements()).isEqualTo(1);
 
-        verify(lectureRepository).findAllByCreator_UserNameAndLectureStatus(eq(userName), eq(null), any(Pageable.class));
+        verify(lectureRepository).findAllByCreator_UserName(eq(userName), any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("내가 생성한 강의 목록 불러오기 성공 - 상태값 필터 O")
+    void getMyLectureList_success_statusFilter() {
+
+        MyLectureSearchRequest request = new MyLectureSearchRequest("제목", LectureStatus.OPEN, 0, 10, "");
+
+        Page<Lecture> lecturePage = new PageImpl<>(List.of(lecture), request.toPageable(), 1);
+
+        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
+        given(lectureRepository.findAllByCreator_UserNameAndLectureStatus(
+                eq(userName), eq(LectureStatus.OPEN), any(Pageable.class)
+        )).willReturn(lecturePage);
+
+        Page<MyLectureListDto> result = creatorService.getMyLectureList(request, userName, LectureStatus.OPEN);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent().get(0).title()).isEqualTo("기존 제목");
+        assertThat(result.getTotalElements()).isEqualTo(1);
+
+        verify(lectureRepository).findAllByCreator_UserNameAndLectureStatus(eq(userName), eq(LectureStatus.OPEN), any(Pageable.class));
     }
 }

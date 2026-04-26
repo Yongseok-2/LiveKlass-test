@@ -73,7 +73,7 @@ public class CancelEnrollmentTest {
     void cancelEnrollment_success() {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when
         enrollmentService.cancelEnrollment(enrollmentId, userName);
@@ -87,7 +87,7 @@ public class CancelEnrollmentTest {
     void cancelEnrollment_fail_ENROLLMENT_NOT_FOUND() {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.empty());
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.empty());
 
         CustomException ex = assertThrows(CustomException.class,
                 () -> enrollmentService.cancelEnrollment(enrollmentId, userName));
@@ -103,7 +103,7 @@ public class CancelEnrollmentTest {
 
         // given
         given(memberRepository.findByUserName("hacker")).willReturn(Optional.of(otherUser));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         CustomException ex = assertThrows(CustomException.class,
                 () -> enrollmentService.cancelEnrollment(enrollmentId, "hacker"));
@@ -126,7 +126,7 @@ public class CancelEnrollmentTest {
 
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         CustomException ex = assertThrows(CustomException.class,
                 () -> enrollmentService.cancelEnrollment(enrollmentId, userName));
@@ -151,7 +151,7 @@ public class CancelEnrollmentTest {
 
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         CustomException ex = assertThrows(CustomException.class,
                 () -> enrollmentService.cancelEnrollment(enrollmentId, userName));

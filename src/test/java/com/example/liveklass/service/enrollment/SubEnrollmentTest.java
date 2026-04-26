@@ -73,8 +73,8 @@ public class SubEnrollmentTest {
         enrollmentService.subEnrollment(lectureId, userName);
 
         // then
-        assertThat(lecture.getCurrentEnrollmentCount()).isEqualTo(1);
         verify(enrollmentRepository, times(1)).save(any(Enrollment.class));
+        verify(lectureRepository, times(1)).increaseEnrollmentCountWithCondition(lectureId);
     }
 
     @Test
@@ -143,6 +143,7 @@ public class SubEnrollmentTest {
     @DisplayName("수강 신청 실패 - 오픈 상태가 아닌 강의")
     void subEnrollment_fail_SALE_PERIOD_EXPIRED() {
 
+
         lecture = Lecture.builder()
                 .id(lectureId)
                 .creator(creator)
@@ -152,7 +153,6 @@ public class SubEnrollmentTest {
         // given
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
-        given(enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)).willReturn(false);
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,

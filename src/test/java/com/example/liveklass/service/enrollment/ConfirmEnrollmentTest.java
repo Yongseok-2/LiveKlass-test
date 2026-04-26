@@ -52,6 +52,8 @@ public class ConfirmEnrollmentTest {
                 .id(1L)
                 .title("테스트 강의")
                 .basePrice(lecturePrice)
+                .maxCapacity(30)
+                .currentEnrollmentCount(15)
                 .lectureStatus(LectureStatus.OPEN)
                 .build();
 
@@ -68,7 +70,7 @@ public class ConfirmEnrollmentTest {
         // given
         PaymentRequest request = new PaymentRequest(lecturePrice);
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when
         enrollmentService.confirmEnrollment(request, enrollmentId, userName);
@@ -88,7 +90,7 @@ public class ConfirmEnrollmentTest {
         Member otherUser = Member.builder().userName("hacker").build();
 
         given(memberRepository.findByUserName("hacker")).willReturn(Optional.of(otherUser));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,
@@ -103,7 +105,7 @@ public class ConfirmEnrollmentTest {
         // given
         PaymentRequest request = new PaymentRequest(100L);
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,
@@ -126,7 +128,7 @@ public class ConfirmEnrollmentTest {
                 .build();
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(confirmedEnrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(confirmedEnrollment));
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,
@@ -146,6 +148,8 @@ public class ConfirmEnrollmentTest {
                 .id(1L)
                 .title("테스트 강의")
                 .basePrice(lecturePrice)
+                .maxCapacity(30)
+                .currentEnrollmentCount(15)
                 .lectureStatus(LectureStatus.CLOSED)
                 .build();
 
@@ -156,7 +160,7 @@ public class ConfirmEnrollmentTest {
                 .status(EnrollmentStatus.PENDING).build();
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
-        given(enrollmentRepository.findById(enrollmentId)).willReturn(Optional.of(enrollment));
+        given(enrollmentRepository.findWithMemberAndLectureById(enrollmentId)).willReturn(Optional.of(enrollment));
 
         // when & then
         CustomException ex = assertThrows(CustomException.class,
