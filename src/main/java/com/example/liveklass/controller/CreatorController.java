@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Creator", description = "강사 관리 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/creator/lectures")
+@RequestMapping("/api/creator")
 public class CreatorController {
 
     private final CreatorService creatorService;
@@ -108,7 +108,7 @@ public class CreatorController {
 
     @CreatorApiDocument.GetLectureDetailErrorResponse
     @Operation(summary = "내가 생성한 강의 상세보기", description = "내가 생성한 강의의 정보를 반환합니다")
-    @GetMapping("/{lectureId}/detail")
+    @GetMapping("/{lectureId}")
     public ResponseEntity<ApiResponse<MyLectureDetailResponse>> getMyLecture(
             @PathVariable Long lectureId,
             @Parameter(hidden = true) @SessionAttribute(name = "userName") String userName,

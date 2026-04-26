@@ -42,15 +42,21 @@ public class EnrollmentService {
             throw new CustomException(ErrorCode.CANNOT_ENROLL_OWN_LECTURE);
         }
 
-        if (enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)) {
-            throw new CustomException(ErrorCode.ALREADY_ENROLLED);
-        }
-
         if (lecture.getLectureStatus() != LectureStatus.OPEN) {
             throw new CustomException(ErrorCode.SALE_PERIOD_EXPIRED);
         }
 
-        lecture.increaseCurrentEnrollmentCount(LocalDateTime.now());
+        lecture.canIncreaseCont(LocalDateTime.now());
+
+        if (enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)) {
+            throw new CustomException(ErrorCode.ALREADY_ENROLLED);
+        }
+
+        int updatedRows = lectureRepository.increaseCountWithCondition(lectureId);
+
+        if (updatedRows == 0) {
+            throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
+        }
 
         Enrollment enrollment = Enrollment.builder()
                 .member(user)

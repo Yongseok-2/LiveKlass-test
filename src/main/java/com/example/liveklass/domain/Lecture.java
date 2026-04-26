@@ -2,15 +2,16 @@ package com.example.liveklass.domain;
 
 import com.example.liveklass.global.error.CustomException;
 import com.example.liveklass.global.error.ErrorCode;
+import com.example.liveklass.repository.LectureRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Getter
@@ -130,7 +131,7 @@ public class Lecture extends BaseEntity {
         this.lectureStatus = LectureStatus.CLOSED;
     }
 
-    public void increaseCurrentEnrollmentCount(LocalDateTime requestTime) {
+    public void canIncreaseCont(LocalDateTime requestTime) {
 
         if (this.salesStartAt != null && requestTime.isBefore(this.salesStartAt)) {
             // 수강 신청 기간이 아닙니다.
@@ -146,8 +147,6 @@ public class Lecture extends BaseEntity {
             // 수강 정원이 마감되었습니다.
             throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
         }
-
-        this.currentEnrollmentCount++;
     }
 
     public void decreaseCurrentEnrollmentCount(LocalDateTime requestTime) {

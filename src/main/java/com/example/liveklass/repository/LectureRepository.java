@@ -2,10 +2,11 @@ package com.example.liveklass.repository;
 
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -26,4 +27,9 @@ public interface  LectureRepository extends JpaRepository<Lecture, Long> {
 
     @EntityGraph(attributePaths = {"creator"})
     Page<Lecture> findAllByCreator_UserName(String userName, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Lecture l SET l.currentEnrollmentCount = l.currentEnrollmentCount + 1 " +
+            "WHERE l.id = :id AND l.currentEnrollmentCount < l.maxCapacity")
+    int increaseCountWithCondition(@Param("id") Long id);
 }

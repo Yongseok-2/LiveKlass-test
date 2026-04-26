@@ -25,7 +25,7 @@ public class LectureController {
 
     @LectureApiDocument.ListErrorResponse
     @Operation(summary = "강의 목록 조회", description = "등록된 강의의 목록을 페이징하여 반환합니다.")
-    @GetMapping("/list")
+    @GetMapping
     public ResponseEntity<ApiResponse<PagedResponse<LectureListDto>>> getLectureList(
             @ParameterObject  @Valid @ModelAttribute LectureSearchRequest request) {
 

@@ -99,7 +99,7 @@ public class GetMyLectureDetailTest {
                 eq(lectureId), any(Pageable.class), eq(EnrollmentStatus.CANCELLED)
         )).willReturn(enrollmentPage);
 
-        MyLectureDetailResponse response = creatorService.getMyLecture(lectureId, userName, pageable);
+        MyLectureDetailResponse response = creatorService.getMyLectureDetail(lectureId, userName, pageable);
 
         assertThat(response).isNotNull();
         assertThat(response.title()).isEqualTo("기존 제목");
