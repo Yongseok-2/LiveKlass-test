@@ -95,8 +95,8 @@ public class GetMyLectureDetailTest {
 
         given(memberRepository.findByUserName(userName)).willReturn(Optional.of(creator));
         given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
-        given(enrollmentRepository.findAllByLectureIdAndStatusNot(
-                eq(lectureId), any(Pageable.class), eq(EnrollmentStatus.CANCELLED)
+        given(enrollmentRepository.findAllByLectureIdAndStatusNotAndStatusNot(
+                eq(lectureId), any(Pageable.class), eq(EnrollmentStatus.CANCELLED), eq(EnrollmentStatus.WAITLISTED)
         )).willReturn(enrollmentPage);
 
         MyLectureDetailResponse response = creatorService.getMyLectureDetail(lectureId, userName, pageable);
@@ -106,7 +106,7 @@ public class GetMyLectureDetailTest {
         assertThat(response.enrollmentList()).isNotNull();
         assertThat(response.currentEnrollmentCount()).isEqualTo(1);
 
-        verify(enrollmentRepository).findAllByLectureIdAndStatusNot(eq(lectureId), any(Pageable.class), eq(EnrollmentStatus.CANCELLED));
+        verify(enrollmentRepository).findAllByLectureIdAndStatusNotAndStatusNot(eq(lectureId), any(Pageable.class), eq(EnrollmentStatus.CANCELLED), eq(EnrollmentStatus.WAITLISTED));
     }
 
 }

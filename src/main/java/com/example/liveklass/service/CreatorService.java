@@ -122,7 +122,7 @@ public class CreatorService {
 
         Lecture lecture = memberAndLectureValid(lectureId, userName);
 
-        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureIdAndStatusNot(lectureId, pageable, EnrollmentStatus.CANCELLED);
+        Page<Enrollment> enrollmentPage = enrollmentRepository.findAllByLectureIdAndStatusNotAndStatusNot(lectureId, pageable, EnrollmentStatus.CANCELLED, EnrollmentStatus.WAITLISTED);
 
         Page<CurrentEnrollmentListDto> enrollmentDtoPage = enrollmentPage.map(CurrentEnrollmentListDto::from);
 

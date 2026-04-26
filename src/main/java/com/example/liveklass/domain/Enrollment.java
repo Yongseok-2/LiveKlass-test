@@ -28,9 +28,8 @@ public class Enrollment extends BaseEntity {
 
     private Long paidAmount;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private EnrollmentStatus status = EnrollmentStatus.PENDING;
+    private EnrollmentStatus status;
 
     private LocalDateTime paymentAt;
 
@@ -58,7 +57,7 @@ public class Enrollment extends BaseEntity {
         this.refundDeadline = paymentTime.plusDays(7);
     }
 
-    public void cancel(LocalDateTime requestTime) {
+    public int cancel(LocalDateTime requestTime) {
 
         if(this.status == EnrollmentStatus.CANCELLED) {
             //이미 취소된 수강 신청입니다.
@@ -70,7 +69,17 @@ public class Enrollment extends BaseEntity {
             throw new CustomException(ErrorCode.REFUND_PERIOD_EXPIRED);
         }
 
-        this.status = EnrollmentStatus.CANCELLED;
-        this.lecture.decreaseCurrentEnrollmentCount(requestTime);
+        if(this.status == EnrollmentStatus.CONFIRMED || this.status == EnrollmentStatus.PENDING) {
+            this.status = EnrollmentStatus.CANCELLED;
+            return 1;
+        }else {
+            this.status = EnrollmentStatus.CANCELLED;
+            return 0;
+        }
+
+    }
+
+    public void updateStatus(EnrollmentStatus enrollmentStatus) {
+        this.status = enrollmentStatus;
     }
 }

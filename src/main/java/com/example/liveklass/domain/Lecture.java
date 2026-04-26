@@ -43,6 +43,10 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false)
     private Integer currentEnrollmentCount = 0;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer waitCount = 0;
+
     @Column(nullable = false)
     private Long basePrice;
 
@@ -131,7 +135,7 @@ public class Lecture extends BaseEntity {
         this.lectureStatus = LectureStatus.CLOSED;
     }
 
-    public void canIncreaseCont(LocalDateTime requestTime) {
+    public void canIncreaseCount(LocalDateTime requestTime) {
 
         if (this.salesStartAt != null && requestTime.isBefore(this.salesStartAt)) {
             // 수강 신청 기간이 아닙니다.
@@ -142,17 +146,5 @@ public class Lecture extends BaseEntity {
             // 수강 신청 기간이 아닙니다.
             throw new CustomException(ErrorCode.ENROLLMENT_PERIOD_ENDED);
         }
-
-        if (this.maxCapacity != null && this.maxCapacity > 0 && this.currentEnrollmentCount >= this.maxCapacity) {
-            // 수강 정원이 마감되었습니다.
-            throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
-        }
     }
-
-    public void decreaseCurrentEnrollmentCount(LocalDateTime requestTime) {
-        if (this.currentEnrollmentCount > 0) {
-            this.currentEnrollmentCount--;
-        }
-    }
-
 }

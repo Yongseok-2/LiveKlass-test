@@ -33,6 +33,9 @@ public record MyLectureDetailResponse(
         @Schema(description = "최대 수강 정원, 0이면 제한 없음", example = "30")
         Integer maxCapacity,
 
+        @Schema(description = "신청 대기 인원", example = "15")
+        Integer waitCount,
+
         @Schema(description = "기본 가격", example = "50000")
         Long basePrice,
 
@@ -60,6 +63,7 @@ public record MyLectureDetailResponse(
                 lecture.getCurrentEnrollmentCount(),
                 PagedResponse.from(enrollmentList),
                 lecture.getMaxCapacity(),
+                lecture.getWaitCount(),
                 lecture.getBasePrice(),
                 lecture.getCreatedAt(),
                 lecture.getSalesStartAt(),

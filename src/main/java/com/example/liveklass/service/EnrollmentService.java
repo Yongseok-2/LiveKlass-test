@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,24 +47,33 @@ public class EnrollmentService {
             throw new CustomException(ErrorCode.SALE_PERIOD_EXPIRED);
         }
 
-        lecture.canIncreaseCont(LocalDateTime.now());
+        lecture.canIncreaseCount(LocalDateTime.now());
 
         if (enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)) {
             throw new CustomException(ErrorCode.ALREADY_ENROLLED);
         }
 
-        int updatedRows = lectureRepository.increaseCountWithCondition(lectureId);
+        int updatedRows = lectureRepository.increaseEnrollmentCountWithCondition(lectureId);
 
-        if (updatedRows == 0) {
-            throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
+        if (updatedRows > 0) {
+            Enrollment enrollment = Enrollment.builder()
+                    .member(user)
+                    .lecture(lecture)
+                    .status(EnrollmentStatus.PENDING)
+                    .build();
+
+            enrollmentRepository.save(enrollment);
+        } else {
+            Enrollment enrollment = Enrollment.builder()
+                    .member(user)
+                    .lecture(lecture)
+                    .status(EnrollmentStatus.WAITLISTED)
+                    .build();
+
+            lectureRepository.increaseWaitCount(lectureId);
+
+            enrollmentRepository.save(enrollment);
         }
-
-        Enrollment enrollment = Enrollment.builder()
-                .member(user)
-                .lecture(lecture)
-                .build();
-
-        enrollmentRepository.save(enrollment);
     }
 
     @Transactional
@@ -92,11 +102,51 @@ public class EnrollmentService {
         Enrollment enrollment = enrollmentRepository.findWithMemberAndLectureById(enrollmentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
+        Long lectureId = enrollment.getLecture().getId();
+
         if (!Objects.equals(enrollment.getMember().getUserName(), user.getUserName())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        enrollment.cancel(LocalDateTime.now());
+        int isEnrollment =  enrollment.cancel(LocalDateTime.now());
+
+        if(isEnrollment > 0) {
+            lectureRepository.decreaseEnrollmentCount(lectureId);
+            promoteWaitlistedUser(lectureId);
+        }else {
+            lectureRepository.decreaseWaitCount(lectureId);
+        }
+    }
+
+    private void promoteWaitlistedUser(Long lectureId) {
+
+        Optional<Enrollment> nextWaitlist = enrollmentRepository
+                .findFirstByLectureIdAndStatusOrderByCreatedAtAsc(lectureId, EnrollmentStatus.WAITLISTED);
+
+        // 1. 대기자가 한 명도 없으면 종료
+        if (nextWaitlist.isEmpty()) {
+            return;
+        }
+
+        Enrollment target = nextWaitlist.get();
+
+        // 2. 내가 이 사람을 가로챌 수 있는지 확인 (WAITLISTED -> PENDING)
+        int updatedRows = enrollmentRepository.updateStatusWithCondition(
+                target.getId(),
+                EnrollmentStatus.WAITLISTED,
+                EnrollmentStatus.PENDING
+        );
+
+        if (updatedRows == 1) {
+            // 성공하면 강의 인원을 1 올리고, 대기자 수를 1 줄입니다.
+            lectureRepository.increaseEnrollmentCountWithCondition(lectureId);
+            lectureRepository.decreaseWaitCount(lectureId);
+            System.out.println("승격 성공: " + target.getMember().getUserName());
+        } else {
+            // 다른 취소 스레드가 이 사람을 채갔습니다.
+            // 그다음 대기자를 찾기 위해 다시 처음부터 시작합니다.
+            promoteWaitlistedUser(lectureId);
+        }
     }
 
     public Page<MyEnrollmentListDto> getEnrollmentList(MyEnrollmentRequest request, String userName) {

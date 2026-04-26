@@ -22,8 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SubEnrollmentTest {
@@ -76,6 +75,39 @@ public class SubEnrollmentTest {
         // then
         assertThat(lecture.getCurrentEnrollmentCount()).isEqualTo(1);
         verify(enrollmentRepository, times(1)).save(any(Enrollment.class));
+    }
+
+    @Test
+    @DisplayName("수강 신청 성공 - 대기열로 들어감")
+    void subEnrollment_success_waitList() {
+
+        lecture = Lecture.builder()
+                .id(lectureId)
+                .title("테스트 강의")
+                .creator(creator)
+                .lectureStatus(LectureStatus.OPEN) // 기본 오픈 상태
+                .maxCapacity(10)
+                .currentEnrollmentCount(10)
+                .salesStartAt(LocalDateTime.now().minusDays(1))
+                .salesEndAt(LocalDateTime.now().plusDays(1))
+                .build();
+
+        // given
+        given(memberRepository.findByUserName(userName)).willReturn(Optional.of(user));
+        given(lectureRepository.findById(lectureId)).willReturn(Optional.of(lecture));
+        given(enrollmentRepository.existsByMemberAndLectureAndStatusNot(user, lecture, EnrollmentStatus.CANCELLED)).willReturn(false);
+        given(lectureRepository.increaseEnrollmentCountWithCondition(lectureId)).willReturn(0);
+
+        // when
+        enrollmentService.subEnrollment(lectureId, userName);
+
+        // then
+        assertThat(lecture.getCurrentEnrollmentCount()).isEqualTo(10);
+        verify(lectureRepository, times(1)).increaseWaitCount(lectureId);
+        verify(enrollmentRepository, times(1)).save(any(Enrollment.class));
+        verify(enrollmentRepository).save(argThat(enrollment ->
+                enrollment.getStatus() == EnrollmentStatus.WAITLISTED
+        ));
     }
 
     @Test

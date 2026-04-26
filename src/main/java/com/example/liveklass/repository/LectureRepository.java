@@ -1,5 +1,6 @@
 package com.example.liveklass.repository;
 
+import com.example.liveklass.domain.EnrollmentStatus;
 import com.example.liveklass.domain.Lecture;
 import com.example.liveklass.domain.LectureStatus;
 import jakarta.persistence.LockModeType;
@@ -31,5 +32,19 @@ public interface  LectureRepository extends JpaRepository<Lecture, Long> {
     @Modifying
     @Query("UPDATE Lecture l SET l.currentEnrollmentCount = l.currentEnrollmentCount + 1 " +
             "WHERE l.id = :id AND l.currentEnrollmentCount < l.maxCapacity")
-    int increaseCountWithCondition(@Param("id") Long id);
+    int increaseEnrollmentCountWithCondition(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE Lecture l SET l.currentEnrollmentCount = l.currentEnrollmentCount - 1 " +
+            "WHERE l.id = :id AND l.currentEnrollmentCount > 0")
+    void decreaseEnrollmentCount(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE Lecture l SET l.waitCount = l.waitCount + 1 WHERE l.id = :id")
+    void increaseWaitCount(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE Lecture l SET l.waitCount = l.waitCount - 1 " +
+            "WHERE l.id = :id AND l.waitCount > 0")
+    void decreaseWaitCount(@Param("id") Long id);
 }

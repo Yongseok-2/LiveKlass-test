@@ -1,8 +1,6 @@
 package com.example.liveklass.service.enrollment;
 
-import com.example.liveklass.domain.Lecture;
-import com.example.liveklass.domain.Member;
-import com.example.liveklass.domain.MemberRole;
+import com.example.liveklass.domain.*;
 import com.example.liveklass.repository.EnrollmentRepository;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
@@ -40,12 +38,10 @@ public class EnrollmentConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-        // 1. 기존 데이터 정리 (안전한 테스트를 위해)
-        enrollmentRepository.deleteAll();
 
-        // 2. 테스트용 유저 100명 생성 및 저장
+        // 테스트용 유저 100명 생성 및 저장
         List<Member> testStudents = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 100; i < 200; i++) {
             testStudents.add(Member.builder()
                     .userName("testUser" + i)
                     .password("1234")
@@ -53,7 +49,7 @@ public class EnrollmentConcurrencyTest {
                     .role(MemberRole.STUDENT)
                     .build());
         }
-        memberRepository.saveAllAndFlush(testStudents); // 한 번에 100명 저장!
+        memberRepository.saveAllAndFlush(testStudents); // 한 번에 100명 저장
     }
 
     @AfterEach
@@ -70,7 +66,7 @@ public class EnrollmentConcurrencyTest {
 
         // Given
         int threadCount = 100; // 100명 동시 접속
-        Long lectureId = 2L;   // 테스트용 강의 ID (정원이 30명이라고 가정)
+        Long lectureId = 9L;   // 테스트용 강의 ID (정원이 30명이라고 가정)
         String baseUserName = "testUser";
 
         // 멀티스레드 환경을 위한 도구
@@ -81,7 +77,7 @@ public class EnrollmentConcurrencyTest {
         stopWatch.start("수강 신청 동시성 테스트");
 
         // When
-        for (int i = 0; i < threadCount; i++) {
+        for (int i = 100; i < 200; i++) {
             String userName = baseUserName + i; // 각기 다른 유저 아이디 생성
             executorService.submit(() -> {
                 try {
@@ -104,11 +100,78 @@ public class EnrollmentConcurrencyTest {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         System.out.println("=======================================");
         System.out.println("최종 수강 인원: " + lecture.getCurrentEnrollmentCount());
+        System.out.println("대기열 인원: " + lecture.getWaitCount());
         System.out.println("총 소요 시간: " + stopWatch.getTotalTimeMillis() + "ms"); // 밀리초 단위
         System.out.println(stopWatch.prettyPrint()); // 상세 보고서 출력
         System.out.println("=======================================");
 
         // 정원이 30명이라면, 최종 인원이 30을 넘으면 동시성 이슈 발생!
         assertThat(lecture.getCurrentEnrollmentCount()).isLessThanOrEqualTo(lecture.getMaxCapacity());
+    }
+
+    @Test
+    @DisplayName("5명이 동시에 수강을 취소했을 때, 대기자 5명이 누락 없이 모두 승격되어야 한다")
+    void waitlistPromotionConcurrencyTest() throws InterruptedException {
+
+        // given
+        // 10번 강의: 정원 30/30, 대기자 5명(ID 1001~1005)으로 세팅됨
+        Long lectureId = 10L;
+
+        // 취소할 대상자 5명의 정보를 DB에서 가져옴 (student01 ~ student05)
+        List<String> cancelUserNames = List.of("student01", "student02", "student03", "student04", "student05");
+        List<Long> enrollmentIdsToCancel = new ArrayList<>();
+
+        for (String name : cancelUserNames) {
+            enrollmentRepository.findByMemberUserNameAndLectureId(name, lectureId)
+                    .ifPresent(e -> enrollmentIdsToCancel.add(e.getId()));
+        }
+
+        int threadCount = enrollmentIdsToCancel.size(); // 5명
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("대기열 자동 승격 동시성 테스트");
+
+        // [When] 5명이 동시에 취소 요청
+        for (int i = 0; i < threadCount; i++) {
+            Long targetEnrollmentId = enrollmentIdsToCancel.get(i);
+            String targetUserName = cancelUserNames.get(i);
+
+            executorService.submit(() -> {
+                try {
+                    // 핵심 로직 호출: 취소 -> 인원 감소 -> 대기자 승격(재귀)
+                    enrollmentService.cancelEnrollment(targetEnrollmentId, targetUserName);
+                    System.out.println("취소 성공: " + targetUserName);
+                } catch (Exception e) {
+                    System.out.println("취소 실패 [" + targetUserName + "]: " + e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        stopWatch.stop();
+
+        // [Then] 결과 검증
+        System.out.println("=======================================");
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        System.out.println("최종 수강 인원: " + lecture.getCurrentEnrollmentCount());
+        System.out.println("남은 대기 인원: " + lecture.getWaitCount());
+        System.out.println("총 소요 시간: " + stopWatch.getTotalTimeMillis() + "ms");
+        System.out.println("=======================================");
+
+        // 1. 수강 인원은 여전히 30명이어야 함 (5명 취소된 자리를 대기자 5명이 바로 채웠으므로)
+        assertThat(lecture.getCurrentEnrollmentCount()).isEqualTo(30);
+
+        // 2. 대기자 수는 0명이 되어야 함
+        assertThat(lecture.getWaitCount()).isEqualTo(0);
+
+        // 3. 실제 대기자였던 유저들(ID: 1001~1005)의 상태가 CONFIRMED로 바뀌었는지 확인
+        for (long id = 1001; id <= 1005; id++) {
+            Enrollment promoted = enrollmentRepository.findById(id).orElseThrow();
+            assertThat(promoted.getStatus()).isEqualTo(EnrollmentStatus.PENDING);
+        }
     }
 }

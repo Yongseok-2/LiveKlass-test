@@ -66,16 +66,6 @@ public interface EnrollmentApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "L004", description = "수강 인원 마감",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "수강 정원이 마감되었습니다.",
-                  "data": null
-                }
-                """))),
             @ApiResponse(responseCode = "E005", description = "강의가 오픈 되어있지 않음",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "BAD_REQUEST",
@@ -163,16 +153,6 @@ public interface EnrollmentApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "L004", description = "수강 인원 마감",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "수강 정원이 마감되었습니다.",
-                  "data": null
-                }
-                """))),
             @ApiResponse(responseCode = "E001", description = "이미 취소된 수강 신청",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "ALREADY_CANCELED",
@@ -257,16 +237,6 @@ public interface EnrollmentApiDocument {
                 {
                   "success": false,
                   "message": "존재하지 않은 사용자입니다.",
-                  "data": null
-                }
-                """))),
-            @ApiResponse(responseCode = "L004", description = "수강 인원 마감",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "수강 정원이 마감되었습니다.",
                   "data": null
                 }
                 """))),

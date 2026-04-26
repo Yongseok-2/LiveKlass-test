@@ -535,6 +535,7 @@ public interface CreatorApiDocument {
                                                                               "isLast": false
                                                                             },
                                                                             "maxCapacity": 30,
+                                                                            "waitCount": 15,
                                                                             "basePrice": 50000,
                                                                             "createdAt": "2026-05-01T09:00:00",
                                                                             "salesStartAt": "2026-05-01T09:00:00",

@@ -8,13 +8,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     @EntityGraph(attributePaths = {"member"})
-    Page<Enrollment> findAllByLectureIdAndStatusNot(Long lectureId, Pageable pageable, EnrollmentStatus enrollmentStatus);
+    Page<Enrollment> findAllByLectureIdAndStatusNotAndStatusNot(Long lectureId, Pageable pageable, EnrollmentStatus enrollmentStatus1, EnrollmentStatus enrollmentStatus2);
 
     boolean existsByMemberAndLectureAndStatusNot(Member member, Lecture lecture, EnrollmentStatus enrollmentStatus);
 
@@ -28,4 +31,17 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     @EntityGraph(attributePaths = {"member", "lecture"})
     Optional<Enrollment> findWithMemberAndLectureById(Long id);
+
+    @EntityGraph(attributePaths = {"member", "lecture"})
+    Optional<Enrollment> findFirstByLectureIdAndStatusOrderByCreatedAtAsc(Long lectureId, EnrollmentStatus enrollmentStatus);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Enrollment e SET e.status = :newStatus " +
+            "WHERE e.id = :id AND e.status = :oldStatus")
+    int updateStatusWithCondition(@Param("id") Long id,
+                                  @Param("oldStatus") EnrollmentStatus oldStatus,
+                                  @Param("newStatus") EnrollmentStatus newStatus);
+
+    @EntityGraph(attributePaths = {"member", "lecture"})
+    Optional<Enrollment> findByMemberUserNameAndLectureId(String userName, Long lectureId);
 }
