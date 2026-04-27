@@ -1,8 +1,8 @@
 # 라이브클래스 코딩 과제
 
 ## 프로젝트 개요
-과제 [BE-A]
-크리에이터(강사)와 수강생를 연결해주는 강의 개설 및 수강 신청 시스템입니다. 
+### 과제 [BE-A]
+크리에이터(강사)와 수강생를 연결해주는 강의 개설 및 수강 신청 시스템입니다. </br>
 강의 생성, 상태 관리, 결제 및 수강 취소 흐름을 포함하며, 정원 초과 시 자동으로 대기열(Waitlist)로 빠지는 시스템과 취소 발생 시 대기자를 승격시키는 등 비즈니스 로직을 구현하는 데 집중했습니다.
 
 ---
@@ -18,9 +18,9 @@
 
 ## 실행 방법
 ### 로컬 실행
-1. 프로젝트를 클론하거나 다운로드합니다.
-2. 터미널에서 프로젝트 최상단 경로로 이동합니다.
-3. 아래 명령어를 통해 프로젝트를 빌드하고 실행합니다.
+1. 프로젝트를 클론하거나 다운로드합니다.</br></br>
+2. 터미널에서 프로젝트 최상단 경로로 이동합니다.</br></br>
+3. 아래 명령어를 통해 프로젝트를 빌드하고 실행합니다.</br></br>
    ```bash
    # Windows (Powershell)
    ./gradlew.bat bootRun
@@ -29,7 +29,7 @@
    ./gradlew bootRun
    ```
 4. 실행 후 브라우저에서 아래 주소로 접속하여 API 문서(Swagger UI)를 확인할 수 있습니다.
-   - **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+   - **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)</br></br>
 5. 로그인 계정(별도로 회원가입 후 테스트해도 무방합니다.)
    - 강사 계정 : creator01 / 1234
    - 수강자 계정 : student01 / 1234
@@ -41,14 +41,14 @@
    - 강의는 `DRAFT(초안)` -> `OPEN(모집 중)` -> `CLOSED(마감)` 상태를 가집니다. `DRAFT`와 `CLOSED` 상태에서는 신청이 불가합니다.
    - 강사가 업로드한 본인의 강의 목록 조회는 페이지네이션을 적용했으며, 상태에 따라 필터링이 가능합니다.
    - 강의 상세보기에서 현재 신청 인원 목록을 페이지네이션을 적용했으며, 대기 인원 수를 조회할 수 있습니다.
-   - 대기 인원이 있는 상태에서 강의 정원을 늘리게 되면 늘린 숫자만큼 대기 인원이 신청인원으로 승격됩니다.
+   - 대기 인원이 있는 상태에서 강의 정원을 늘리게 되면 늘린 숫자만큼 대기 인원이 신청인원으로 승격됩니다.</br></br>
 2. **수강 신청 프로세스**: 
    - 사용자가 신청하면 즉시 정원 한자리를 선점하고 **`PENDING(결제 대기)`** 상태가 됩니다.
    - 정원이 가득 찬 경우 거부되는 대신, **`WAITLISTED(대기열)`** 상태로 등록되어 취소자 발생 시 승격할 기회를 얻습니다.
-   - 결제 진행 시 **`CONFIRMED(수강 확정)`** 상태로 변경됩니다. 결제 모듈은 실제 PG 연동 대신 파라미터 검증 로직으로 간소화했습니다.
+   - 결제 진행 시 **`CONFIRMED(수강 확정)`** 상태로 변경됩니다. 결제 모듈은 실제 PG 연동 대신 파라미터 검증 로직으로 간소화했습니다.</br></br>
 3. **취소 및 환불 정책**: 
-   - `CONFIRMED` 상태 진입(결제 확정) 후 7일 이내에만 취소(환불)가 가능하도록 정책을 가정했습니다. (`refundDeadline` 도입)
-4. **자동 취소 스케줄러**: 결제 대기(`PENDING`) 상태로 3일이 경과한 데이터는 주기적으로 실행되는 스케줄러를 통해 자동으로 취소 처리되며, 정원을 복구하고 대기자를 승격시킵니다.
+   - `CONFIRMED` 상태 진입(결제 확정) 후 7일 이내에만 취소(환불)가 가능하도록 정책을 가정했습니다. (`refundDeadline` 도입)</br></br>
+4. **자동 취소 스케줄러**: 결제 대기(`PENDING`) 상태로 3일이 경과한 데이터는 주기적으로 실행되는 스케줄러를 통해 자동으로 취소 처리되며, 정원을 복구하고 대기자를 승격시킵니다.</br></br>
 5. **인증/인가**: 제약사항을 고려하여 세션의 `userName` 파라미터를 통한 간단한 검증 로직으로 사용자를 식별하도록 가정했습니다.
 
 ---
@@ -63,11 +63,11 @@
      - `강의 시작일`은 `강의 종료일` 이전이어야 함
    - 강의가 무료일 경우, 상시 판매 및 수강이 가능할 경우를 위해 날짜는 null을 허용하지만, 경우에 따라 꼭 있어야할 일자는 자동으로 보정되어 들어갑니다.
      - `강의 시작일`이 `null`일 경우 -> `강의 시작일`은 현재 시각으로 저장
-     - `강의 종료일`이 `null`이 아니면서, `판매 종료일`이 `null`이거나 `판매 종료일`이 `강의 종료일`보다 이후일 경우 -> `판매 종료일`을 `강의 종료일`로 저장
+     - `강의 종료일`이 `null`이 아니면서, `판매 종료일`이 `null`이거나 `판매 종료일`이 `강의 종료일`보다 이후일 경우 -> `판매 종료일`을 `강의 종료일`로 저장</br></br>
 2. **대기열 승격 시스템**
    - 대기열 시스템을 구현하기로 하면서 대기열 등록 후 자리가 생겼을 때 사용자에게 어떤 방식으로 전달할지 고민하였습니다.
    - 대기열은 단순 알람 신청이 아닌 순서가 의미가 있는 시스템이라고 생각하여 알람은 단순 서버 로그로 대체한 뒤, 자동으로 신청(`PENDING`) 상태로 승격되도록 구현하였습니다.
-   - 또한 대기열이 있는 상태에서 정원을 수정할 경우 늘어난 정원만큼 대기자가 신청 상태로 승격됩니다.
+   - 또한 대기열이 있는 상태에서 정원을 수정할 경우 늘어난 정원만큼 대기자가 신청 상태로 승격됩니다.</br></br>
 3. **동시성 이슈 해결 방안 (원자적 업데이트)**
    - 수십 명의 사용자가 남은 한 자리에 동시에 수강 신청을 하는 상황을 방어해야 했습니다.
    - 비관적 락이나 낙관적 락을 사용할 경우 성능 저하 문제나 재시도 로직 구현의 복잡성이 커지는 단점이 있고, 시스템 특성상 트래픽이 한순간에 과도하게 몰리지 않을 것같다는 판단하에 DB의 기본 락 메커니즘을 이용한 원자적 업데이트 쿼리를 채택했습니다.
@@ -107,71 +107,55 @@
 
 ### ERD
 
-```dbml
-Enum MemberRole {
-  STUDENT
-  CREATOR
-}
+```mermaid
+erDiagram
+    %% Tables
+    Member {
+        bigint id PK "고유 ID"
+        varchar user_name UK "로그인 아이디"
+        varchar password 
+        varchar name 
+        MemberRole role 
+        timestamp created_at 
+        timestamp updated_at 
+    }
 
-Enum LectureType {
-  LIVE
-  VOD
-}
+    Lecture {
+        bigint id PK "고유 ID"
+        bigint member_id FK "강사 ID"
+        varchar title 
+        text description 
+        int max_capacity "최대 수강 정원"
+        int current_enrollment_count "현재 수강 인원"
+        int wait_count "대기자 수"
+        bigint base_price 
+        LectureType lecture_type 
+        LectureStatus lecture_status 
+        boolean is_deleted 
+        timestamp lecture_start_at 
+        timestamp lecture_end_at 
+        timestamp sales_start_at 
+        timestamp sales_end_at 
+        timestamp created_at 
+        timestamp updated_at 
+    }
 
-Enum LectureStatus {
-  DRAFT
-  OPEN
-  CLOSED
-}
+    Enrollment {
+        bigint id PK "고유 ID"
+        bigint member_id FK "수강생 ID"
+        bigint lecture_id FK "강의 ID"
+        bigint paid_amount "결제 금액"
+        EnrollmentStatus status 
+        timestamp payment_at "결제 일시"
+        timestamp refund_deadline "환불 가능 기한"
+        timestamp created_at 
+        timestamp updated_at 
+    }
 
-Enum EnrollmentStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  WAITLISTED
-}
-
-Table Member {
-  id bigint [pk, increment, note: '고유 ID']
-  user_name varchar [unique, not null, note: '로그인 아이디']
-  password varchar [not null]
-  name varchar [not null]
-  role MemberRole [not null]
-  created_at timestamp [not null, default: `now()`]
-  updated_at timestamp [default: `now()`]
-}
-
-Table Lecture {
-  id bigint [pk, increment, note: '고유 ID']
-  member_id bigint [not null, ref: > Member.id, note: '강사 ID (FK)']
-  title varchar [not null]
-  description text
-  max_capacity int [not null, note: '최대 수강 정원']
-  current_enrollment_count int [not null, default: 0, note: '현재 수강 인원']
-  wait_count int [not null, default: 0, note: '대기자 수']
-  base_price bigint [not null]
-  lecture_type LectureType [not null]
-  lecture_status LectureStatus [not null]
-  is_deleted boolean [not null, default: false]
-  lecture_start_at timestamp
-  lecture_end_at timestamp
-  sales_start_at timestamp
-  sales_end_at timestamp
-  created_at timestamp [not null, default: `now()`]
-  updated_at timestamp [default: `now()`]
-}
-
-Table Enrollment {
-  id bigint [pk, increment, note: '고유 ID']
-  member_id bigint [not null, ref: > Member.id, note: '수강생 ID (FK)']
-  lecture_id bigint [not null, ref: > Lecture.id, note: '강의 ID (FK)']
-  paid_amount bigint [note: '결제 금액']
-  status EnrollmentStatus [not null, default: 'PENDING']
-  payment_at timestamp [note: '결제 일시']
-  refund_deadline timestamp [note: '환불 가능 기한']
-  created_at timestamp [not null, default: `now()`]
-  updated_at timestamp [default: `now()`]
-}
+    %% Relationships
+    Member ||--o{ Lecture : "등록 (CREATOR)"
+    Member ||--o{ Enrollment : "수강 (STUDENT)"
+    Lecture ||--o{ Enrollment : "포함"
 ```
 
 ### 테이블 설명
