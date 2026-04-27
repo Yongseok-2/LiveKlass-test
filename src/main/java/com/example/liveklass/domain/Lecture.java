@@ -120,14 +120,14 @@ public class Lecture extends BaseEntity {
             throw new CustomException(ErrorCode.INCORRECT_SALE_START_DATE);
         }
 
-        if(this.salesStartAt != null && this.lectureEndAt != null && this.lectureStartAt.isAfter(this.lectureEndAt)) {
+        if(this.lectureEndAt != null && this.lectureStartAt.isAfter(this.lectureEndAt)) {
             // 강의 시작일은 강의 종료일 이전이어야 합니다.
             throw new CustomException(ErrorCode.INCORRECT_LECTURE_START_DATE);
         }
     }
 
     public void openLecture() {
-        validateDate();
+        updateDates(this.salesStartAt, this.salesEndAt, this.lectureStartAt, this.lectureEndAt);
         this.lectureStatus = LectureStatus.OPEN;
     }
 
