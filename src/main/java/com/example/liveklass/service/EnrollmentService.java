@@ -116,14 +116,14 @@ public class EnrollmentService {
         }
     }
 
-    private void promoteWaitlistedUser(Long lectureId) {
+    private boolean promoteWaitlistedUser(Long lectureId) {
 
         Optional<Enrollment> nextWaitlist = enrollmentRepository
                 .findFirstByLectureIdAndStatusOrderByCreatedAtAsc(lectureId, EnrollmentStatus.WAITLISTED);
 
         // 1. 대기자가 한 명도 없으면 종료
         if (nextWaitlist.isEmpty()) {
-            return;
+            return false;
         }
 
         Enrollment target = nextWaitlist.get();
@@ -140,24 +140,22 @@ public class EnrollmentService {
             lectureRepository.increaseEnrollmentCountWithCondition(lectureId);
             lectureRepository.decreaseWaitCount(lectureId);
             System.out.println("승격 성공: " + target.getMember().getUserName());
+            return true;
         } else {
             // 다른 취소 스레드가 이 사람을 채갔습니다.
             // 그다음 대기자를 찾기 위해 다시 처음부터 시작합니다.
-            promoteWaitlistedUser(lectureId);
+            return promoteWaitlistedUser(lectureId);
         }
     }
 
-    public void promoteMultipleWaitlistedUsers(Long lectureId) {
+    public void promoteMultipleWaitlistedUsers(Long lectureId, int capacityDiff) {
 
-        while (true) {
-            Lecture lecture = lectureRepository.findById(lectureId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
+        for (int i = 0; i < capacityDiff; i++) {
+            boolean success = promoteWaitlistedUser(lectureId);
 
-            if (lecture.getCurrentEnrollmentCount() >= lecture.getMaxCapacity() || lecture.getWaitCount() <= 0) {
+            if (!success) {
                 break;
             }
-
-            promoteWaitlistedUser(lectureId);
         }
     }
 

@@ -74,7 +74,9 @@ public class CreatorService {
         );
 
         lecture.updateMaxCapacity(request.maxCapacity());
-        enrollmentService.promoteMultipleWaitlistedUsers(lectureId);
+
+        int capacityDiff = request.maxCapacity() - lecture.getCurrentEnrollmentCount();
+        enrollmentService.promoteMultipleWaitlistedUsers(lectureId, capacityDiff);
         return lecture.getId();
     }
 
