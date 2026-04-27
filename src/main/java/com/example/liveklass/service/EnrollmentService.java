@@ -13,14 +13,12 @@ import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -169,6 +167,20 @@ public class EnrollmentService {
                 EnrollmentStatus.PENDING, pageable);
 
         return enrollmentPage.map(PaymentHistoryResponse::from);
+    }
+
+    @Transactional
+    public void schedulerCancel(Enrollment enrollment) {
+        Long lectureId = enrollment.getLecture().getId();
+
+        int isEnrollment = enrollment.cancel(LocalDateTime.now());
+
+        if (isEnrollment > 0) {
+            lectureRepository.decreaseEnrollmentCount(lectureId);
+            promoteWaitlistedUser(lectureId);
+        } else {
+            lectureRepository.decreaseWaitCount(lectureId);
+        }
     }
 
     public Member memberValid(String userName) {
