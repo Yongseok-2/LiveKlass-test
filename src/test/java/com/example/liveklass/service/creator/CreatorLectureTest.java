@@ -40,6 +40,10 @@ public class CreatorLectureTest {
     Member creator;
     LectureCreateRequest request;
     Lecture lecture;
+    LocalDateTime salesStart = LocalDateTime.parse("2026-05-01T09:00:00");
+    LocalDateTime salesEnd = LocalDateTime.parse("2026-05-03T09:00:00");
+    LocalDateTime lectureStartAt = LocalDateTime.parse("2026-05-05T09:00:00");
+    LocalDateTime lectureEndAt = LocalDateTime.parse("2026-05-10T09:00:00");
 
     @BeforeEach
     void setUp() {
@@ -53,6 +57,7 @@ public class CreatorLectureTest {
                 .creator(creator)
                 .title("기존 제목")
                 .currentEnrollmentCount(10)
+                .waitCount(0)
                 .basePrice(50000L)
                 .lectureStatus(LectureStatus.DRAFT)
                 .build();
@@ -63,7 +68,11 @@ public class CreatorLectureTest {
                 "설명입니다",
                 30,
                 30000L,
-                LectureType.VOD
+                LectureType.VOD,
+                salesStart,
+                salesEnd,
+                lectureStartAt,
+                lectureEndAt
         );
     }
 
