@@ -67,14 +67,10 @@ public class Lecture extends BaseEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public void updateBasicInfo(String title, String description, Integer maxCapacity, Long basePrice, LectureType lectureType) {
+    public void updateBasicInfo(String title, String description, Long basePrice, LectureType lectureType) {
 
-        if(maxCapacity < this.currentEnrollmentCount) {
-            throw new CustomException(ErrorCode.INVALID_CAPACITY_SETTING);
-        }
         this.title = title;
         this.description = description;
-        this.maxCapacity = maxCapacity;
         this.basePrice = basePrice;
         this.lectureType = lectureType;
     }
@@ -101,6 +97,15 @@ public class Lecture extends BaseEntity {
         }
 
         validateDate();
+    }
+
+    public void updateMaxCapacity(int maxCapacity) {
+
+        if(maxCapacity < this.currentEnrollmentCount) {
+            throw new CustomException(ErrorCode.INVALID_CAPACITY_SETTING);
+        }
+
+        this.maxCapacity = maxCapacity;
     }
 
     public void validateDate() {

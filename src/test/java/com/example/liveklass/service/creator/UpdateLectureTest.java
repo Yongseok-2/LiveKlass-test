@@ -8,6 +8,7 @@ import com.example.liveklass.global.error.ErrorCode;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
 import com.example.liveklass.service.CreatorService;
+import com.example.liveklass.service.EnrollmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ public class UpdateLectureTest {
 
     @Mock
     private LectureRepository lectureRepository;
+
+    @Mock
+    private EnrollmentService enrollmentService;
 
     @InjectMocks
     CreatorService creatorService;
@@ -57,6 +61,7 @@ public class UpdateLectureTest {
                 .creator(creator)
                 .title("기존 제목")
                 .currentEnrollmentCount(10)
+                .waitCount(0)
                 .basePrice(50000L)
                 .salesStartAt(salesStart)
                 .salesEndAt(salesEnd)

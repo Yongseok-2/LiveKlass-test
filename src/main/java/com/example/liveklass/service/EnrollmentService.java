@@ -147,6 +147,20 @@ public class EnrollmentService {
         }
     }
 
+    public void promoteMultipleWaitlistedUsers(Long lectureId) {
+
+        while (true) {
+            Lecture lecture = lectureRepository.findById(lectureId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
+
+            if (lecture.getCurrentEnrollmentCount() >= lecture.getMaxCapacity() || lecture.getWaitCount() <= 0) {
+                break;
+            }
+
+            promoteWaitlistedUser(lectureId);
+        }
+    }
+
     public Page<MyEnrollmentListDto> getEnrollmentList(MyEnrollmentRequest request, String userName) {
 
         Member member = memberValid(userName);

@@ -78,8 +78,4 @@ public class Enrollment extends BaseEntity {
         }
 
     }
-
-    public void updateStatus(EnrollmentStatus enrollmentStatus) {
-        this.status = enrollmentStatus;
-    }
 }

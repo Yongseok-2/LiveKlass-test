@@ -27,6 +27,7 @@ public class CreatorService {
     private final MemberRepository memberRepository;
     private final LectureRepository lectureRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final EnrollmentService enrollmentService;
 
     @Transactional
     public Long createLecture(LectureCreateRequest request, String userName) {
@@ -61,7 +62,6 @@ public class CreatorService {
         lecture.updateBasicInfo(
                 request.title(),
                 request.description(),
-                request.maxCapacity(),
                 request.basePrice(),
                 request.lectureType()
         );
@@ -73,6 +73,8 @@ public class CreatorService {
                 request.lectureEndAt()
         );
 
+        lecture.updateMaxCapacity(request.maxCapacity());
+        enrollmentService.promoteMultipleWaitlistedUsers(lectureId);
         return lecture.getId();
     }
 

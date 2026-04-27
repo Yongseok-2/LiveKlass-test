@@ -1,9 +1,11 @@
 package com.example.liveklass.service.enrollment;
 
 import com.example.liveklass.domain.*;
+import com.example.liveklass.dto.lecture.LectureUpdateRequest;
 import com.example.liveklass.repository.EnrollmentRepository;
 import com.example.liveklass.repository.LectureRepository;
 import com.example.liveklass.repository.MemberRepository;
+import com.example.liveklass.service.CreatorService;
 import com.example.liveklass.service.EnrollmentService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
@@ -22,10 +25,14 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class EnrollmentConcurrencyTest {
 
     @Autowired
     private EnrollmentService enrollmentService;
+
+    @Autowired
+    private CreatorService creatorService;
 
     @Autowired
     private LectureRepository lectureRepository;
@@ -168,10 +175,56 @@ public class EnrollmentConcurrencyTest {
         // 2. 대기자 수는 0명이 되어야 함
         assertThat(lecture.getWaitCount()).isEqualTo(0);
 
-        // 3. 실제 대기자였던 유저들(ID: 1001~1005)의 상태가 CONFIRMED로 바뀌었는지 확인
+        // 3. 실제 대기자였던 유저들(ID: 1001~1005)의 상태가 PENDING으로 바뀌었는지 확인
         for (long id = 1001; id <= 1005; id++) {
             Enrollment promoted = enrollmentRepository.findById(id).orElseThrow();
             assertThat(promoted.getStatus()).isEqualTo(EnrollmentStatus.PENDING);
         }
+    }
+
+    @Test
+    @DisplayName("최대 정원을 늘렸을 때, 대기자 5명이 누락 없이 모두 승격되어야 한다")
+    void updateMaxCapacityConcurrencyTest() throws InterruptedException {
+
+        // given
+        Long lectureId = 10L;
+
+        LectureUpdateRequest request = new LectureUpdateRequest(
+                "수정된 제목", "설명", 40, 50000L, LectureType.VOD,
+                null, null, null, null
+        );
+
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("대기열 자동 승격 동시성 테스트");
+
+        // [When]
+        creatorService.updateLecture(request, lectureId, "creator02");
+
+        stopWatch.stop();
+
+        // [Then] 결과 검증
+        System.out.println("=======================================");
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        System.out.println("최종 수강 인원: " + lecture.getCurrentEnrollmentCount());
+        System.out.println("최대 수강 인원: " + lecture.getMaxCapacity());
+        System.out.println("남은 대기 인원: " + lecture.getWaitCount());
+        System.out.println("총 소요 시간: " + stopWatch.getTotalTimeMillis() + "ms");
+        System.out.println("=======================================");
+
+        // 1. 수강 인원은 35이어야함(대기자 5명 승격)
+        assertThat(lecture.getCurrentEnrollmentCount()).isEqualTo(35);
+
+        // 2. 대기자 수는 0명이 되어야 함
+        assertThat(lecture.getWaitCount()).isEqualTo(0);
+
+        // 3. 실제 대기자였던 유저들(ID: 1001~1005)의 상태가 PENDING으로 바뀌었는지 확인
+        for (long id = 1001; id <= 1005; id++) {
+            Enrollment promoted = enrollmentRepository.findById(id).orElseThrow();
+            assertThat(promoted.getStatus()).isEqualTo(EnrollmentStatus.PENDING);
+        }
+
+        // 4. 수강 최대 인원이 40이어야 함
+        assertThat(lecture.getMaxCapacity()).isEqualTo(40);
     }
 }
