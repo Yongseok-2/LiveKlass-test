@@ -143,16 +143,6 @@ public interface CreatorApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "L007", description = "날짜 설정 검증 실패",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "정원은 현재 수강 인원보다 적게 설정할 수 없습니다.",
-                  "data": null
-                }
-                """))),
             @ApiResponse(responseCode = "L008", description = "강의 생성자 검증 실패",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "BAD_REQUEST",

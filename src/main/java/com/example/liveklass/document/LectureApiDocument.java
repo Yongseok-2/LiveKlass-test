@@ -47,16 +47,6 @@ public interface LectureApiDocument {
                                                   "isLast": false
                                                 }
                 }
-                """))),
-            @ApiResponse(responseCode = "L001", description = "해당 강의 없음",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "NOT_FOUND",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "",
-                  "data": null
-                }
                 """)))
     })
     @interface ListErrorResponse {
@@ -98,6 +88,16 @@ public interface LectureApiDocument {
                 {
                   "success": false,
                   "message": "로그인이 필요한 서비스입니다.",
+                  "data": null
+                }
+                """))),
+            @ApiResponse(responseCode = "M002", description = "존재하지 않은 사용자",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "MEMBER_NOT_FOUND",
+                                    value = """
+                {
+                  "success": false,
+                  "message": "존재하지 않은 사용자입니다.",
                   "data": null
                 }
                 """))),

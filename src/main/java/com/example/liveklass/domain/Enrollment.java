@@ -42,10 +42,6 @@ public class Enrollment extends BaseEntity {
             throw new CustomException(ErrorCode.NOT_PENDING);
         }
 
-        if(this.lecture.getCurrentEnrollmentCount() >= this.lecture.getMaxCapacity()) {
-            throw new CustomException(ErrorCode.CAPACITY_EXCEEDED);
-        }
-
         if (this.lecture.getLectureStatus() != LectureStatus.OPEN) {
             throw new CustomException(ErrorCode.SALE_PERIOD_EXPIRED);
         }

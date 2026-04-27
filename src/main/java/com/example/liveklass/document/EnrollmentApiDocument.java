@@ -46,26 +46,6 @@ public interface EnrollmentApiDocument {
                   "data": null
                 }
                 """))),
-            @ApiResponse(responseCode = "L002", description = "해당 강의 종료됨",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "이미 종료된 강의입니다.",
-                  "data": null
-                }
-                """))),
-            @ApiResponse(responseCode = "L003", description = "수강 신청 기간이 아님",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(name = "BAD_REQUEST",
-                                    value = """
-                {
-                  "success": false,
-                  "message": "수강 신청 기간이 아닙니다.",
-                  "data": null
-                }
-                """))),
             @ApiResponse(responseCode = "E005", description = "강의가 오픈 되어있지 않음",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(name = "BAD_REQUEST",

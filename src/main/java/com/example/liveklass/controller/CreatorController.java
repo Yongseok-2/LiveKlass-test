@@ -33,7 +33,7 @@ public class CreatorController {
     private final CreatorService creatorService;
 
     @CreatorApiDocument.CreateLectureErrorResponse
-    @Operation(summary = "강의 등록", description = "새로운 강의를 생성하고 생성된 강의의 ID를 반환합니다.")
+    @Operation(summary = "강의 생성", description = "새로운 강의를 생성하고 생성된 강의의 ID를 반환합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createLecture(
             @Valid @RequestBody LectureCreateRequest request,
