@@ -19,7 +19,6 @@ import java.util.List;
 public class EnrollmentScheduler {
 
     private final EnrollmentRepository enrollmentRepository;
-    private final LectureRepository lectureRepository;
     private final EnrollmentService enrollmentService;
 
     @Scheduled(cron = "0 0 * * * *")
@@ -31,8 +30,7 @@ public class EnrollmentScheduler {
 
         for (Enrollment enrollment : expiredList) {
             try {
-                // 유저 검증 없이 핵심 로직만 호출!
-                enrollmentService.schedulerCancel(enrollment);
+                enrollmentService.schedulerCancel(enrollment.getId());
                 System.out.println("자동 취소 및 승격 완료: Enrollment ID " + enrollment.getId());
             } catch (Exception e) {
                 log.error("자동 취소 중 오류 발생: " + enrollment.getId(), e);

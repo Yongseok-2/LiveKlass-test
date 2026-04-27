@@ -184,7 +184,10 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void schedulerCancel(Enrollment enrollment) {
+    public void schedulerCancel(Long enrollmentId) {
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
         Long lectureId = enrollment.getLecture().getId();
 
         int isEnrollment = enrollment.cancel(LocalDateTime.now());
