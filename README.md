@@ -111,45 +111,45 @@
 erDiagram
     %% Tables
     Member {
-        bigint id PK "고유 ID"
-        varchar user_name UK "로그인 아이디"
-        varchar password 
-        varchar name 
-        MemberRole role 
-        timestamp created_at 
-        timestamp updated_at 
+        bigint id PK "고유 ID (PK)"
+        varchar user_name UK "로그인 아이디 (unique)"
+        varchar password "비밀번호"
+        varchar name "이름"
+        MemberRole role "STUDENT / CREATOR"
+        timestamp created_at "생성 일시"
+        timestamp updated_at "수정 일시"
     }
 
     Lecture {
-        bigint id PK "고유 ID"
-        bigint member_id FK "강사 ID"
-        varchar title 
-        text description 
+        bigint id PK "고유 ID (PK)"
+        bigint member_id FK "강사 ID (FK → Member.id)"
+        varchar title "강의 제목"
+        text description "강의 설명"
         int max_capacity "최대 수강 정원"
         int current_enrollment_count "현재 수강 인원"
-        int wait_count "대기자 수"
-        bigint base_price 
-        LectureType lecture_type 
-        LectureStatus lecture_status 
-        boolean is_deleted 
-        timestamp lecture_start_at 
-        timestamp lecture_end_at 
-        timestamp sales_start_at 
-        timestamp sales_end_at 
-        timestamp created_at 
-        timestamp updated_at 
+        int wait_count "현재 대기자 수"
+        bigint base_price "수강료"
+        LectureType lecture_type "LIVE / VOD"
+        LectureStatus lecture_status "DRAFT → OPEN → CLOSED"
+        boolean is_deleted "소프트 삭제 여부"
+        timestamp lecture_start_at "강의 시작일"
+        timestamp lecture_end_at "강의 종료일"
+        timestamp sales_start_at "판매 시작일"
+        timestamp sales_end_at "판매 종료일"
+        timestamp created_at "생성 일시"
+        timestamp updated_at "수정 일시"
     }
 
     Enrollment {
-        bigint id PK "고유 ID"
-        bigint member_id FK "수강생 ID"
-        bigint lecture_id FK "강의 ID"
-        bigint paid_amount "결제 금액"
-        EnrollmentStatus status 
-        timestamp payment_at "결제 일시"
-        timestamp refund_deadline "환불 가능 기한"
-        timestamp created_at 
-        timestamp updated_at 
+        bigint id PK "고유 ID (PK)"
+        bigint member_id FK "수강생 ID (FK → Member.id)"
+        bigint lecture_id FK "강의 ID (FK → Lecture.id)"
+        bigint paid_amount "결제 금액 (PENDING/WAITLISTED 시 NULL)"
+        EnrollmentStatus status "수강 신청 상태"
+        timestamp payment_at "결제 일시 (PENDING/WAITLISTED 시 NULL)"
+        timestamp refund_deadline "환불 기한 (결제일+7일, PENDING/WAITLISTED 시 NULL)"
+        timestamp created_at "생성 일시"
+        timestamp updated_at "수정 일시"
     }
 
     %% Relationships
