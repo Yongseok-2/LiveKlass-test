@@ -127,7 +127,6 @@ public class Lecture extends BaseEntity {
     }
 
     public void openLecture() {
-
         validateDate();
         this.lectureStatus = LectureStatus.OPEN;
     }
